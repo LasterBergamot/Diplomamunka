@@ -95,8 +95,13 @@ def main():
     print('-Dataset examples-')
     print(df.iloc[::5000000, :])
 
+    timeToFormatTheData = time.time()
+    print("Time to format the data: " + str(timeToFormatTheData - start) + " seconds")
+
+    export_csv = df.to_csv(r'D:\Netflix_dataframe_to_csv_export.csv', index=None, header=True)
+
     end = time.time()
-    print(str(end - start) + " seconds")
+    print("Whole process: " + str(end - start) + " seconds")
     # reader = Reader(rating_scale=(1, 5))
     # data = Dataset.load_from_df(df[['Cust_Id', 'Rating']], reader)
     # print("len: " + str(len(data.raw_ratings)))
