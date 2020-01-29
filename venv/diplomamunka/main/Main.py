@@ -1,9 +1,10 @@
-from diplomamunka.main.service.Preprocessor import Preprocessor
+from diplomamunka.main.service.RecommenderService import RecommenderService
+
 
 def main():
-    p = Preprocessor()
+    recommenderService = RecommenderService()
 
-    p.testMethod()
+    recommenderService.testMethod()
 
 
 if __name__ == "__main__":

@@ -1,3 +1,11 @@
+# This creates the usable Netflix dataset
+
+import time
+
+import numpy as np
+import pandas as pd
+
+
 class Preprocessor:
 
     def testMethod(self):
