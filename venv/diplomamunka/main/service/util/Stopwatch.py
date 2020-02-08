@@ -8,30 +8,39 @@ class Stopwatch:
     def __init__(self, algorithm):
         self.algorithm = algorithm
 
-    def asd(self):
-        self.algorithm.bi
-        self.algorithm.bsl_options
-        self.algorithm.bu
-        self.algorithm.sim_options
-        self.algorithm.trainset
-
+    # Relevant only for algorithms using Pearson baseline similarity or the BaselineOnly algorithm
     def compute_baselines(self):
-        self.algorithm.compute_baselines()
+        return self.algorithm.compute_baselines()
 
     def compute_similarities(self):
-        self.algorithm.compute_similarities()
+        return self.algorithm.compute_similarities()
 
     def default_prediction(self):
-        self.algorithm.default_prediction()
+        return self.algorithm.default_prediction()
 
-    def fit(self):
-        self.algorithm.fit()
+    def fit(self, trainSet):
+        return self.algorithm.fit(trainSet)
 
-    def get_neighbors(self):
-        self.algorithm.get_neighbors()
+    def get_neighbors(self, numberOfNeighbors, innerId):
+        return self.algorithm.get_neighbors(numberOfNeighbors, innerId)
 
-    def predict(self):
-        self.algorithm.predict()
+    def predict(self, rawUserId, rawItemId, trueRating=None, clipEstimation=True, verbose=False):
+        return self.algorithm.predict(rawUserId, rawItemId, trueRating, clipEstimation, verbose)
 
-    def test(self):
-        self.algorithm.test()
+    def test(self, testSet, verbose=False):
+        return self.algorithm.test(testSet, verbose)
+
+    def getUserBaseline(self):
+        return self.algorithm.bu
+
+    def getItemBaseline(self):
+        return self.algorithm.bi
+
+    def getBaselineOptions(self):
+        return self.algorithm.bsl_options
+
+    def getSimilarityOptions(self):
+        return self.algorithm.sim_options
+
+    def getTrainSet(self):
+        return self.algorithm.trainset
