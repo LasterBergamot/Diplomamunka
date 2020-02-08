@@ -1,5 +1,6 @@
 from diplomamunka.main.dao.DatasetAccessor import DatasetAccessor
 from diplomamunka.main.service.recommender.Recommender import Recommender
+from diplomamunka.main.service.recommender.algorithm.Algorithm import Algorithm
 from diplomamunka.main.service.util.Metrics import Metrics
 from diplomamunka.main.service.util.Investigator import Investigator
 from diplomamunka.main.service.util.Plotter import Plotter
@@ -7,6 +8,8 @@ from diplomamunka.main.service.util.Stopwatch import Stopwatch
 
 
 class RecommenderService:
+
+    algorithms = []
 
     datasetAccessor: DatasetAccessor
     investigator: Investigator
@@ -36,6 +39,13 @@ class RecommenderService:
 
     def investigateChosenDataset(self):
         return self.investigator.investigateChosenDataset()
+
+    # create train and validation sets here from the dataset
+    def processChosenDataset(self):
+        print("Will process the chosen dataset here...")
+
+    def addAlgorithm(self, algorithm):
+        self.algorithms.append(Algorithm(algorithm))
 
     # use stopwatch here
     def evaluate(self):

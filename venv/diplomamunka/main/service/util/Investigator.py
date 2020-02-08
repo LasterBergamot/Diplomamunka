@@ -1,4 +1,4 @@
-from diplomamunka.main.service.recommender.algorithm.Algorithm import Algorithm
+from diplomamunka.main.service.recommender.algorithm.AlgorithmType import Algorithm
 
 class Investigator:
 
