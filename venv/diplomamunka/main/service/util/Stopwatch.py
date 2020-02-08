@@ -5,10 +5,10 @@ class Stopwatch:
 
     algorithm: AlgoBase
 
-    def __init__(self, algorithm):
+    def __init__(self, algorithm=None):
         self.algorithm = algorithm
 
-    # Relevant only for algorithms using Pearson baseline similarity or the BaselineOnly algorithm
+    # Relevant only for algorithm using Pearson baseline similarity or the BaselineOnly algorithm
     def compute_baselines(self):
         return self.algorithm.compute_baselines()
 

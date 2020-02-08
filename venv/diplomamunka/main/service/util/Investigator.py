@@ -1,1 +1,7 @@
-# Checks for the sparsity of the datasets
+from diplomamunka.main.service.recommender.algorithm.Algorithm import Algorithm
+
+class Investigator:
+
+    def investigateChosenDataset(self):
+        print("Will investigate the sparsity of the chosen dataset...")
+        return Algorithm.COLLABORATIVE_FILTERING.value
