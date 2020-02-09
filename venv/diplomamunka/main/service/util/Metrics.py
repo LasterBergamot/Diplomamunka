@@ -1,5 +1,21 @@
+# Contains every metric data for the given algorithm
+import string
+
+
 class Metrics:
 
+    algorithmName: string
+    mae: float
+    rmse: float
+    coverage: float
+    diversity: float
+    novelty: float
+    scalability: float
+
+    def __init__(self, algorithmName):
+        self.algorithmName = algorithmName
+
+    # prints out all of the metrics info
     def showMetrics(self):
         print("Will show metrics here...")
 
