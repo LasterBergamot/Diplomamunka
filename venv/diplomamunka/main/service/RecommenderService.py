@@ -7,6 +7,8 @@ from diplomamunka.main.service.util.Plotter import Plotter
 
 class RecommenderService:
 
+    metricsList: list
+
     datasetAccessor: DatasetAccessor
     investigator: Investigator
     recommender: Recommender
@@ -22,18 +24,18 @@ class RecommenderService:
 
     def start(self):
         dataset = self.chooseDataset()
-        algorithm = self.investigateChosenDataset(dataset)
+        algorithm = self.selectRecommenderAlgorithm(dataset)
         self.addAlgorithm(algorithm)
-        metricsArray = self.evaluate()
-        topN = self.recommend()
-        self.showMetrics()
+        metricsFromEvaluation = self.evaluate()
+        self.recommend()
+        self.showMetrics(metricsFromEvaluation)
         self.plot()
 
     def chooseDataset(self):
         return self.datasetAccessor.chooseDataset()
 
-    def investigateChosenDataset(self, dataset):
-        return self.investigator.investigateChosenDataset(dataset)
+    def selectRecommenderAlgorithm(self, dataset):
+        return self.investigator.selectRecommenderAlgorithm(dataset)
 
     def processChosenDataset(self):
         self.recommender.processChosenDataset()
@@ -45,10 +47,15 @@ class RecommenderService:
         return self.recommender.evaluate()
 
     def recommend(self):
-        return self.recommender.recommend()
+        topN = self.recommender.recommend()
+        print("Will print TopN recommendations here...")
 
-    def showMetrics(self):
-        self.metrics.showMetrics()
+    # prints out all of the metrics info
+    def showMetrics(self, metricsFromEvaluation):
+        print("Will show metrics here...")
 
     def plot(self):
         self.plotter.plot()
+
+    def addMetricsFromArrayToMetricsList(self, otherMetricsList):
+        self.metricsList.extend(otherMetricsList)

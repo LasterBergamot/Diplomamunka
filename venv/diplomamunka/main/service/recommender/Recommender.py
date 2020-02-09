@@ -3,7 +3,7 @@ from diplomamunka.main.service.recommender.algorithm.RecommenderAlgorithm import
 
 class Recommender:
 
-    algorithms = []
+    algorithms: list
 
     dataset: object
 
@@ -13,13 +13,13 @@ class Recommender:
     def addAlgorithm(self, algorithm, name):
         self.algorithms.append(RecommenderAlgorithm(algorithm, name))
 
-    # evaluates all of the algorithm, and returns with an array of Metrics objects
-    def evaluate(self):
-        print("Will evaluate some stuff...")
-
     # create train and validation sets here from the dataset
     def processChosenDataset(self):
         print("Will process the chosen dataset here...")
+
+    # evaluates all of the algorithm, and returns with an array of Metrics objects
+    def evaluate(self):
+        print("Will evaluate some stuff...")
 
     # computes the top 10 recommendations for the users
     def recommend(self):

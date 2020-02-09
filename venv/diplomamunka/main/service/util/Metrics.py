@@ -12,12 +12,8 @@ class Metrics:
     novelty: float
     scalability: float
 
-    def __init__(self, algorithmName):
+    def __init__(self, algorithmName=None):
         self.algorithmName = algorithmName
-
-    # prints out all of the metrics info
-    def showMetrics(self):
-        print("Will show metrics here...")
 
     def MAE(self):
         print("Will calculate Mean Absolute Error here...")
