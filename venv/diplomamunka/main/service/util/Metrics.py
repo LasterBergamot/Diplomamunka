@@ -11,12 +11,12 @@ class Metrics:
 
     def __init__(self, algorithmName=None):
         self.algorithmName = algorithmName
-        self.mae = 0
-        self.rmse = 0
-        self.coverage = 0
-        self.diversity = 0
-        self.novelty = 0
-        self.scalability = 0
+        self.mae = 0.0
+        self.rmse = 0.0
+        self.coverage = 0.0
+        self.diversity = 0.0
+        self.novelty = 0.0
+        self.scalability = 0.0
 
     def MAE(self, predictions):
         print("Calculating Mean Absolute Error...")
