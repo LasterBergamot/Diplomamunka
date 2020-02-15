@@ -23,17 +23,13 @@ class Metrics:
         self.mae = accuracy.mae(predictions, verbose=False)
         print("Calculating Mean Absolute Error...Done")
 
-        return self.mae
-
     def RMSE(self, predictions):
         print("Calculating Root Mean Squared Error...")
         self.rmse = accuracy.rmse(predictions, verbose=False)
         print("Calculating Root Mean Squared Error...Done")
 
-        return self.rmse
-
     # What percentage of users have at least one "good" recommendation
-    def coverage(self, topNPredicted, numUsers, ratingThreshold=0):
+    def Coverage(self, topNPredicted, numUsers, ratingThreshold=0):
         print("Calculating Coverage...")
         hits = 0
         for userID in topNPredicted.keys():
@@ -48,9 +44,7 @@ class Metrics:
         self.coverage = hits / numUsers
         print("Calculating Coverage...Done")
 
-        return self.coverage
-
-    def diversity(self, topNPredicted, simsAlgo):
+    def Diversity(self, topNPredicted, simsAlgo):
         print("Calculating Diversity...")
 
         n = 0
@@ -71,9 +65,7 @@ class Metrics:
         self.diversity = (1 - S)
         print("Calculating Diversity...Done")
 
-        return self.diversity
-
-    def novelty(self, topNPredicted, rankings):
+    def Novelty(self, topNPredicted, rankings):
         print("Calculating Novelty...")
 
         n = 0
@@ -87,11 +79,38 @@ class Metrics:
         self.novelty = total / n
         print("Calculating Novelty...Done")
 
-        return self.novelty
-
     # Scalability = time requirement of evaluation
     def setScalability(self, runTimeOfAlgorithm):
         self.scalability = runTimeOfAlgorithm
 
+    # Returns a Metrics object with all the fields filled with the data
+    def calculateMetrics(self, predictions, topNPredicted, numUsers, simsAlgo, rankings, runTimeOfAlgorithm, ratingThreshold=0):
+        self.MAE(predictions)
+        self.RMSE(predictions)
+        self.Coverage(topNPredicted, numUsers, ratingThreshold)
+        self.Diversity(topNPredicted, simsAlgo)
+        self.Novelty(topNPredicted, rankings)
+        self.setScalability(runTimeOfAlgorithm)
+
+        return self
+
+    def getMAE(self):
+        return self.mae
+
+    def getRMSE(self):
+        return self.rmse
+
+    def getCoverage(self):
+        return self.coverage
+
+    def getDiversity(self):
+        return self.diversity
+
+    def getNovelty(self):
+        return self.novelty
+
     def getScalability(self):
         return self.scalability
+
+    def getMetricsObject(self):
+        return self
