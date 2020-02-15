@@ -1,4 +1,5 @@
 from diplomamunka.main.service.RecommenderService import RecommenderService
+from surprise import Dataset
 
 
 def main():
@@ -8,7 +9,6 @@ def main():
     # could create a version without the investigator, so the user could choose the algorithm manually
 
     recommenderService.start()
-
 
 if __name__ == "__main__":
     main()

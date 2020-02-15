@@ -17,22 +17,27 @@ class RecommenderService:
         self.plotter = Plotter()
 
     def start(self):
-        dataset = self.chooseDataset()
-        algorithm = self.selectRecommenderAlgorithm(dataset)
-        self.addAlgorithm(algorithm)
-        metricsFromEvaluation = self.evaluate()
-        self.recommend()
-        self.showMetrics(metricsFromEvaluation)
-        self.plot()
+        self.chooseDataset()
+        # self.processChosenDataset()
+        # dataset = self.getDataset()
+        # algorithm = self.selectRecommenderAlgorithm(dataset)
+        # self.addAlgorithm(algorithm)
+        # metricsFromEvaluation = self.evaluate()
+        # self.recommend()
+        # self.showMetrics(metricsFromEvaluation)
+        # self.plot()
 
     def chooseDataset(self):
         return self.datasetAccessor.chooseDataset()
 
+    def processChosenDataset(self):
+        self.datasetAccessor.processChosenDataset()
+
+    def getDataset(self):
+        return self.datasetAccessor.getDataset()
+
     def selectRecommenderAlgorithm(self, dataset):
         return self.investigator.selectRecommenderAlgorithm(dataset)
-
-    def processChosenDataset(self):
-        self.recommender.processChosenDataset()
 
     def addAlgorithm(self, algorithm):
         self.recommender.addAlgorithm(algorithm)
