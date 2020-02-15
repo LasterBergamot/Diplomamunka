@@ -9,12 +9,6 @@ class RecommenderService:
 
     metricsList: list
 
-    datasetAccessor: DatasetAccessor
-    investigator: Investigator
-    recommender: Recommender
-    metrics: Metrics
-    plotter: Plotter
-
     def __init__(self):
         self.datasetAccessor = DatasetAccessor()
         self.investigator = Investigator()

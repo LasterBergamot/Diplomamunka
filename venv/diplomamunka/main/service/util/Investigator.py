@@ -1,4 +1,4 @@
-from diplomamunka.main.service.recommender.algorithm.AlgorithmType import Algorithm
+from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
 
 class Investigator:
 
@@ -9,4 +9,4 @@ class Investigator:
 
     def investigateChosenDataset(self, dataset):
         print("Will investigate the sparsity of the chosen dataset...")
-        return Algorithm.COLLABORATIVE_FILTERING.value
+        return AlgorithmType.COLLABORATIVE_FILTERING.value
