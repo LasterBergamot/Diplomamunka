@@ -1,6 +1,7 @@
 # Contains every metric data for the given algorithm
 import itertools
 import string
+from collections import defaultdict
 
 from surprise import accuracy
 
@@ -29,7 +30,7 @@ class Metrics:
         print("Calculating Root Mean Squared Error...Done")
 
     # What percentage of users have at least one "good" recommendation
-    def Coverage(self, topNPredicted, numUsers, ratingThreshold=0):
+    def Coverage(self, topNPredicted, numberOfUsers, ratingThreshold=0):
         print("Calculating Coverage...")
         hits = 0
         for userID in topNPredicted.keys():
@@ -41,22 +42,22 @@ class Metrics:
             if (hit):
                 hits += 1
 
-        self.coverage = hits / numUsers
+        self.coverage = hits / numberOfUsers
         print("Calculating Coverage...Done")
 
-    def Diversity(self, topNPredicted, simsAlgo):
+    def Diversity(self, topNPredicted, similarityMatrix):
         print("Calculating Diversity...")
 
         n = 0
         total = 0
-        simsMatrix = simsAlgo.compute_similarities()
+        simsMatrix = similarityMatrix.compute_similarities()
         for userID in topNPredicted.keys():
             pairs = itertools.combinations(topNPredicted[userID], 2)
             for pair in pairs:
                 movie1 = pair[0][0]
                 movie2 = pair[1][0]
-                innerID1 = simsAlgo.trainset.to_inner_iid(str(movie1))
-                innerID2 = simsAlgo.trainset.to_inner_iid(str(movie2))
+                innerID1 = similarityMatrix.trainset.to_inner_iid(str(movie1))
+                innerID2 = similarityMatrix.trainset.to_inner_iid(str(movie2))
                 similarity = simsMatrix[innerID1][innerID2]
                 total += similarity
                 n += 1
@@ -65,7 +66,7 @@ class Metrics:
         self.diversity = (1 - S)
         print("Calculating Diversity...Done")
 
-    def Novelty(self, topNPredicted, rankings):
+    def Novelty(self, topNPredicted, popularityRankings):
         print("Calculating Novelty...")
 
         n = 0
@@ -73,7 +74,7 @@ class Metrics:
         for userID in topNPredicted.keys():
             for rating in topNPredicted[userID]:
                 movieID = rating[0]
-                rank = rankings[movieID]
+                rank = popularityRankings[movieID]
                 total += rank
                 n += 1
         self.novelty = total / n
@@ -83,16 +84,25 @@ class Metrics:
     def setScalability(self, runTimeOfAlgorithm):
         self.scalability = runTimeOfAlgorithm
 
-    # Returns a Metrics object with all the fields filled with the data
-    def calculateMetrics(self, predictions, topNPredicted, numUsers, simsAlgo, rankings, runTimeOfAlgorithm, ratingThreshold=0):
+    def calculateTopN(self, predictions, n=10, minimumRating=4.0):
+        topN = defaultdict(list)
+
+        for userID, movieID, actualRating, estimatedRating, _ in predictions:
+            if (estimatedRating >= minimumRating):
+                topN[int(userID)].append((int(movieID), estimatedRating))
+
+        for userID, ratings in topN.items():
+            ratings.sort(key=lambda x: x[1], reverse=True)
+            topN[int(userID)] = ratings[:n]
+
+        return topN
+
+    def calculateMetrics(self, predictions, topNPredicted, numberOfUsers, similarityMatrix, popularityRankings, ratingThreshold=0):
         self.MAE(predictions)
         self.RMSE(predictions)
-        self.Coverage(topNPredicted, numUsers, ratingThreshold)
-        self.Diversity(topNPredicted, simsAlgo)
-        self.Novelty(topNPredicted, rankings)
-        self.setScalability(runTimeOfAlgorithm)
-
-        return self
+        self.Coverage(topNPredicted, numberOfUsers, ratingThreshold)
+        self.Diversity(topNPredicted, similarityMatrix)
+        self.Novelty(topNPredicted, popularityRankings)
 
     def getMAE(self):
         return self.mae
