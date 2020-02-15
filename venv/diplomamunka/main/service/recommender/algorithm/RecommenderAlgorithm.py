@@ -1,13 +1,7 @@
-import string
 import time
-
-from surprise import AlgoBase
 
 
 class RecommenderAlgorithm:
-
-    algorithm: AlgoBase
-    name: string
 
     def __init__(self, algorithm, name):
         self.algorithm = algorithm
