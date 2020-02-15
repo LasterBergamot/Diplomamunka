@@ -1,27 +1,26 @@
 from collections import defaultdict
 
-from diplomamunka.main.dao.DatasetType import DatasetType
-from surprise.model_selection import train_test_split
-
-
 from surprise import Dataset as surpriseDataset, Reader
+from surprise.model_selection import train_test_split
 
 
 class Dataset:
 
     def __init__(self):
         self.dataset = None
+        self.datasetName = None
         self.trainSet = None
         self.testSet = None
 
     def loadDataset(self, datasetType):
-        print("Loading dataset: ", datasetType.value)
+        print("Loading dataset: [{}]".format(datasetType.value))
         # if datasetType == DatasetType.NETFLIX_PRIZE_DATASET:
         #     self.dataset = self.loadNetflixDataset()
         # else:
         self.dataset = surpriseDataset.load_builtin(datasetType.value)
+        self.datasetName = datasetType.value
 
-        print(self.dataset.has_been_split)
+        print("Loading dataset: [{}] done!".format(datasetType.value))
 
     def loadNetflixDataset(self):
         netflixCSVPath = r"D:\Egyetem\Msc\Diplomamunka\Netflix_Prize_Dataset\Netflix_dataframe_to_csv_export.csv"
@@ -30,10 +29,10 @@ class Dataset:
         return surpriseDataset.load_from_file(netflixCSVPath, reader)
 
     # create train and validation sets here from the dataset
-    def processChosenDataset(self):
-        print("Will process the chosen dataset here...")
+    def processChosenDataset(self, testSetSize):
+        print("Spliting dataset [{}] into train- and testSets, with test_size [{}]!".format(self.datasetName, testSetSize))
         # Build a 75/25 train/test split for measuring accuracy
-        self.trainSet, self.testSet = train_test_split(self.dataset, test_size=.25, random_state=1)
+        self.trainSet, self.testSet = train_test_split(self.dataset, test_size=testSetSize, random_state=1)
 
     def getPopularityRanks(self):
         ratings = defaultdict(int)
@@ -52,3 +51,12 @@ class Dataset:
 
     def getDataset(self):
         return self.dataset
+
+    def getDatasetName(self):
+        return self.datasetName
+
+    def getTrainSet(self):
+        return self.trainSet
+
+    def getTestSet(self):
+        return self.testSet

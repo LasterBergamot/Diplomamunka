@@ -31,8 +31,8 @@ class DatasetAccessor:
         self.dataset.loadDataset(datasetType)
 
     # create train and validation sets here from the dataset
-    def processChosenDataset(self):
-        self.dataset.processChosenDataset()
+    def processChosenDataset(self, testSetSize):
+        self.dataset.processChosenDataset(testSetSize)
 
     def getDataset(self):
         return self.dataset.getDataset()

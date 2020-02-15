@@ -18,7 +18,7 @@ class RecommenderService:
 
     def start(self):
         self.chooseDataset()
-        # self.processChosenDataset()
+        self.processChosenDataset(0.25)
         # dataset = self.getDataset()
         # algorithm = self.selectRecommenderAlgorithm(dataset)
         # self.addAlgorithm(algorithm)
@@ -30,8 +30,8 @@ class RecommenderService:
     def chooseDataset(self):
         return self.datasetAccessor.chooseDataset()
 
-    def processChosenDataset(self):
-        self.datasetAccessor.processChosenDataset()
+    def processChosenDataset(self, testSetSize):
+        self.datasetAccessor.processChosenDataset(testSetSize)
 
     def getDataset(self):
         return self.datasetAccessor.getDataset()
