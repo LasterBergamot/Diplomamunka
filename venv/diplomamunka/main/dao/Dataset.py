@@ -4,7 +4,8 @@ from diplomamunka.main.dao.DatasetType import DatasetType
 from surprise.model_selection import train_test_split
 
 
-from surprise import Dataset as surpriseDataset
+from surprise import Dataset as surpriseDataset, Reader
+
 
 class Dataset:
 
@@ -15,14 +16,18 @@ class Dataset:
 
     def loadDataset(self, datasetType):
         print("Loading dataset: ", datasetType.value)
-        if datasetType == DatasetType.NETFLIX_PRIZE_DATASET:
-            self.dataset = self.loadNetflixDataset()
-        else:
-            self.dataset = surpriseDataset.load_builtin(datasetType.value)
+        # if datasetType == DatasetType.NETFLIX_PRIZE_DATASET:
+        #     self.dataset = self.loadNetflixDataset()
+        # else:
+        self.dataset = surpriseDataset.load_builtin(datasetType.value)
+
+        print(self.dataset.has_been_split)
 
     def loadNetflixDataset(self):
-        print("Loading Netflix dataset...")
-        return 0
+        netflixCSVPath = r"D:\Egyetem\Msc\Diplomamunka\Netflix_Prize_Dataset\Netflix_dataframe_to_csv_export.csv"
+        reader = Reader(line_format="user rating item", sep=",")
+
+        return surpriseDataset.load_from_file(netflixCSVPath, reader)
 
     # create train and validation sets here from the dataset
     def processChosenDataset(self):

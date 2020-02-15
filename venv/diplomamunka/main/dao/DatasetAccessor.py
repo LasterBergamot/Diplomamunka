@@ -13,9 +13,8 @@ class DatasetAccessor:
         print("Movielens-100k: type in 100k or ml-100k")
         print("Movielens-1m: type in 1m or ml-1m")
         print("Jester (dataset 2): type in j or jester")
-        print("Netflix Prize dataset: type in n or netflix")
+        # print("Netflix Prize dataset: type in n or netflix")
         inputDatasetString = input()
-        datasetType = None
 
         if inputDatasetString == MOVIELENS_100k_SHORT or inputDatasetString == MOVIELENS_100k_LONG:
             datasetType = DatasetType.MOVIELENS_100K
