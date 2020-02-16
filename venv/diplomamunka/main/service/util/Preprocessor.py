@@ -49,6 +49,8 @@ class Preprocessor:
             names=['user', 'rating', 'timestamp'], usecols=[0, 1, 2])
         df4['rating'] = df4['rating'].astype(float)
 
+        print("Reading the data took: {}".format(time.time() - start))
+
         # Combining the data
         print("Combining the data...")
         df = df1
@@ -65,16 +67,18 @@ class Preprocessor:
         movie_count = df.isnull().sum()[1]
 
         # get customer count
-        cust_count = df['Cust_Id'].nunique() - movie_count
+        cust_count = df['user'].nunique() - movie_count
 
         # get rating count
-        rating_count = df['Cust_Id'].count() - movie_count
+        rating_count = df['user'].count() - movie_count
+
+        print("Combining the data took: {}".format(time.time() - start))
 
         print("Data Cleaning...")
         # Data Cleaning
         # Getting the Movie_Id field
-        df_nan = pd.DataFrame(pd.isnull(df.Rating))
-        df_nan = df_nan[df_nan['Rating'] == True]
+        df_nan = pd.DataFrame(pd.isnull(df.rating))
+        df_nan = df_nan[df_nan['rating'] == True]
         df_nan = df_nan.reset_index()
 
         movie_np = []
@@ -95,10 +99,10 @@ class Preprocessor:
         print('Length: {}'.format(len(movie_np)))
 
         # remove those Movie ID rows
-        df = df[pd.notnull(df['Rating'])]
+        df = df[pd.notnull(df['rating'])]
 
-        df['Movie_Id'] = movie_np.astype(int)
-        df['Cust_Id'] = df['Cust_Id'].astype(int)
+        df['item'] = movie_np.astype(int)
+        df['user'] = df['user'].astype(int)
         print('-Dataset examples-')
         print(df.iloc[::5000000, :])
 

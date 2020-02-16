@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from diplomamunka.main.dao.DatasetType import DatasetType
 from surprise import Dataset as surpriseDataset, Reader
 from surprise.model_selection import train_test_split
 
@@ -14,17 +15,18 @@ class Dataset:
 
     def loadDataset(self, datasetType):
         print("Loading dataset: [{}]".format(datasetType.value))
-        # if datasetType == DatasetType.NETFLIX_PRIZE_DATASET:
-        #     self.dataset = self.loadNetflixDataset()
-        # else:
-        self.dataset = surpriseDataset.load_builtin(datasetType.value)
+        if datasetType == DatasetType.NETFLIX_PRIZE_DATASET:
+            self.dataset = self.loadNetflixDataset()
+        else:
+            self.dataset = surpriseDataset.load_builtin(datasetType.value)
         self.datasetName = datasetType.value
 
         print("Loading dataset: [{}] done!".format(datasetType.value))
 
     def loadNetflixDataset(self):
-        netflixCSVPath = r"D:\Egyetem\Msc\Diplomamunka\Netflix_Prize_Dataset\Netflix_dataframe_to_csv_export.csv"
-        reader = Reader(line_format="user rating item", sep=",")
+        # netflixCSVPath = r"D:\Egyetem\Msc\Diplomamunka\Netflix_Prize_Dataset\Netflix_dataframe_to_csv_export.csv"
+        netflixCSVPath = r"D:\Netflix_dataframe_to_csv_export.csv"
+        reader = Reader(line_format="user rating timestamp item", sep=",")
 
         return surpriseDataset.load_from_file(netflixCSVPath, reader)
 
