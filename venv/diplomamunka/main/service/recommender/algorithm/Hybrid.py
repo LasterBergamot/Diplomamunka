@@ -1,7 +1,10 @@
+from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
 from surprise import AlgoBase
 
 
 class Hybrid(AlgoBase):
+
+    algorithmType = AlgorithmType.HYBRID
 
     def __init__(self, algorithms, weights, sim_options={}):
         AlgoBase.__init__(self)

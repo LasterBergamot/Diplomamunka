@@ -2,10 +2,13 @@ import heapq
 import math
 
 import numpy as np
+from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
 from surprise import AlgoBase, PredictionImpossible
 
 
 class ContentBased(AlgoBase):
+
+    algorithmType = AlgorithmType.CONTENT_BASED
 
     def __init__(self, k=40, sim_options={}):
         AlgoBase.__init__(self)
@@ -18,8 +21,8 @@ class ContentBased(AlgoBase):
 
         # Load up genre vectors for every movie
         # ml = MovieLens()
-        # genres = ml.getGenres()
-        # years = ml.getYears()
+        genres = self.getGenres()
+        years = self.getYears()
 
         print("Computing content-based similarity matrix...")
 
@@ -71,6 +74,50 @@ class ContentBased(AlgoBase):
             return shotLengthDiff * colorVarianceDiff * motionDiff * lightingDiff * numShotsDiff
         else:
             return 0
+
+    def getGenres(self):
+        genres = defaultdict(list)
+        genreIDs = {}
+        maxGenreID = 0
+        with open(self.moviesPath, newline='', encoding='ISO-8859-1') as csvfile:
+            movieReader = csv.reader(csvfile)
+            next(movieReader)  # Skip header line
+            for row in movieReader:
+                movieID = int(row[0])
+                genreList = row[2].split('|')
+                genreIDList = []
+                for genre in genreList:
+                    if genre in genreIDs:
+                        genreID = genreIDs[genre]
+                    else:
+                        genreID = maxGenreID
+                        genreIDs[genre] = genreID
+                        maxGenreID += 1
+                    genreIDList.append(genreID)
+                genres[movieID] = genreIDList
+        # Convert integer-encoded genre lists to bitfields that we can treat as vectors
+        for (movieID, genreIDList) in genres.items():
+            bitfield = [0] * maxGenreID
+            for genreID in genreIDList:
+                bitfield[genreID] = 1
+            genres[movieID] = bitfield
+
+        return genres
+
+    def getYears(self):
+        p = re.compile(r"(?:\((\d{4})\))?\s*$")
+        years = defaultdict(int)
+        with open(self.moviesPath, newline='', encoding='ISO-8859-1') as csvfile:
+            movieReader = csv.reader(csvfile)
+            next(movieReader)
+            for row in movieReader:
+                movieID = int(row[0])
+                title = row[1]
+                m = p.search(title)
+                year = m.group(1)
+                if year:
+                    years[movieID] = int(year)
+        return years
 
     def estimate(self, u, i):
 

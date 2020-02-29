@@ -205,3 +205,4 @@ venv/Netflix/probe.txt
 venv/Netflix/qualifying.txt
 
 # End of https://www.gitignore.io/api/python,pycharm
+*.txt

@@ -11,8 +11,8 @@ class Recommender:
         self.trainSet = None
         self.testSet = None
 
-    def addAlgorithm(self, algorithm, name):
-        self.algorithms.append(RecommenderAlgorithm(algorithm, name))
+    def addAlgorithm(self, algorithm):
+        self.algorithms.append(algorithm)
 
     # evaluates all of the algorithms, and returns with a list of Metrics objects
     def evaluate(self):

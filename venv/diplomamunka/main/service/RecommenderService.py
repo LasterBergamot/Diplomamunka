@@ -22,8 +22,12 @@ class RecommenderService:
         dataset = self.getDataset()
         trainSet = self.getTrainSet()
         testSet = self.getTestSet()
-        algorithm, name, algorithmType = self.selectRecommenderAlgorithm(dataset)
-        self.addAlgorithmToRecommender(algorithm, name)
+        recommenderAlgorithm = self.investigateChosenDataset(dataset)
+        additionalDataDict = self.getAdditionalData(recommenderAlgorithm.algorithm.algorithmType)
+
+        print(additionalDataDict)
+
+        self.addAlgorithmToRecommender(recommenderAlgorithm)
         # metricsFromEvaluation = self.evaluate()
         # self.recommend()
         # self.showMetrics(metricsFromEvaluation)
@@ -44,11 +48,14 @@ class RecommenderService:
     def getTestSet(self):
         return self.datasetAccessor.getTestSet()
 
-    def selectRecommenderAlgorithm(self, dataset):
-        return self.investigator.selectRecommenderAlgorithm(dataset)
+    def investigateChosenDataset(self, dataset):
+        return self.investigator.investigateChosenDataset(dataset)
 
-    def addAlgorithmToRecommender(self, algorithm, name):
-        self.recommender.addAlgorithm(algorithm, name)
+    def getAdditionalData(self, algorithmType):
+        return self.datasetAccessor.getAdditionalData(algorithmType)
+
+    def addAlgorithmToRecommender(self, algorithm):
+        self.recommender.addAlgorithm(algorithm)
 
     def evaluate(self):
         return self.recommender.evaluate()
