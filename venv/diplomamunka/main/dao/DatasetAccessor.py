@@ -23,6 +23,7 @@ class DatasetAccessor:
         print("Movielens-1m: type in 1m or ml-1m")
         print("Jester (dataset 2): type in j or jester")
         print("Netflix Prize dataset: type in n or netflix")
+        # Instead of Netflix (??) the Book-Crossing Dataset will come here
         inputDatasetString = input()
 
         if inputDatasetString == MOVIELENS_100k_SHORT or inputDatasetString == MOVIELENS_100k_LONG:
@@ -43,17 +44,14 @@ class DatasetAccessor:
     def processChosenDataset(self, testSetSize):
         self.dataset.processChosenDataset(testSetSize)
 
-    def getAdditionalData(self, algorithmType):
+    # Only in the case of MovieLens dataset
+    def getPopularityRankings(self, datasetType):
+        popularityRankings = None
 
-        genres = None
-        years = None
-        popularityRankings = self.getPopularityRanks()
+        if (datasetType == DatasetType.MOVIELENS_1m or datasetType == DatasetType.MOVIELENS_100K):
+            popularityRankings = self.getPopularityRanks()
 
-        if (algorithmType == AlgorithmType.CONTENT_BASED):
-            genres = self.getGenres()
-            years = self.getYears()
-
-        return {"genres": genres, "years": years, "popularityRankings": popularityRankings}
+        return popularityRankings
 
     # a builtin dataset has
     # - an url (where to download it)
@@ -131,7 +129,7 @@ class DatasetAccessor:
         return rankings
 
     def getDataset(self):
-        return self.dataset.getDataset()
+        return self.dataset
 
     def getTrainSet(self):
         return self.dataset.getTrainSet()

@@ -102,7 +102,9 @@ class Metrics:
         self.RMSE(predictions)
         self.Coverage(topNPredicted, numberOfUsers, ratingThreshold)
         self.Diversity(topNPredicted, similarityMatrix)
-        self.Novelty(topNPredicted, popularityRankings)
+
+        if (popularityRankings != None):
+            self.Novelty(topNPredicted, popularityRankings)
 
     def getMAE(self):
         return self.mae

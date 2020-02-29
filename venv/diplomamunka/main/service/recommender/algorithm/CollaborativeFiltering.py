@@ -12,7 +12,7 @@ class CollaborativeFiltering(AlgoBase):
 
     def fit(self, trainset):
         AlgoBase.fit(self, trainset)
-        return self.model.fit(self, trainset)
+        return self.model.fit(trainset)
 
     def estimate(self, u, i):
         return self.model.estimate(u, i)

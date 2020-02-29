@@ -19,16 +19,18 @@ class RecommenderService:
     def start(self):
         self.chooseDataset()
         self.processChosenDataset(0.25)
-        dataset = self.getDataset()
-        trainSet = self.getTrainSet()
-        testSet = self.getTestSet()
+        dataset, trainSet, testSet = self.getDataset(), self.getTrainSet(), self.getTestSet()
         recommenderAlgorithm = self.investigateChosenDataset(dataset)
-        additionalDataDict = self.getAdditionalData(recommenderAlgorithm.algorithm.algorithmType)
+        popularityRankings = self.getPopularityRankings(dataset.getDatasetType())
 
-        print(additionalDataDict)
+        # print(popularityRankings)
 
         self.addAlgorithmToRecommender(recommenderAlgorithm)
-        # metricsFromEvaluation = self.evaluate()
+        metricsFromEvaluation = self.evaluate(trainSet, testSet, popularityRankings)
+
+        print("MAE: {}".format(metricsFromEvaluation.__getitem__(0).getMAE()))
+        print("Novelty: {}".format(metricsFromEvaluation.__getitem__(0).getNovelty()))
+
         # self.recommend()
         # self.showMetrics(metricsFromEvaluation)
         # self.plot()
@@ -51,14 +53,14 @@ class RecommenderService:
     def investigateChosenDataset(self, dataset):
         return self.investigator.investigateChosenDataset(dataset)
 
-    def getAdditionalData(self, algorithmType):
-        return self.datasetAccessor.getAdditionalData(algorithmType)
+    def getPopularityRankings(self, datasetType):
+        return self.datasetAccessor.getPopularityRankings(datasetType)
 
     def addAlgorithmToRecommender(self, algorithm):
         self.recommender.addAlgorithm(algorithm)
 
-    def evaluate(self):
-        return self.recommender.evaluate()
+    def evaluate(self, trainSet, testSet, popularityRankings):
+        return self.recommender.evaluate(trainSet, testSet, popularityRankings)
 
     def recommend(self):
         topN = self.recommender.recommend()

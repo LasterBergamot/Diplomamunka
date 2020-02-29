@@ -6,21 +6,16 @@ class Recommender:
 
     algorithms = []
 
-    def __init__(self, dataset=None):
-        self.dataset = dataset
-        self.trainSet = None
-        self.testSet = None
-
     def addAlgorithm(self, algorithm):
         self.algorithms.append(algorithm)
 
     # evaluates all of the algorithms, and returns with a list of Metrics objects
-    def evaluate(self):
+    def evaluate(self, trainSet, testSet, popularityRankings):
         print("Will evaluate some stuff...")
         metricsFromAlgorithms = []
 
         for algorithm in self.algorithms:
-            metricsFromAlgorithms.append(algorithm.evaluate(self.trainSet, self.testSet))
+            metricsFromAlgorithms.append(algorithm.evaluate(trainSet, testSet, popularityRankings))
 
         return metricsFromAlgorithms
 
