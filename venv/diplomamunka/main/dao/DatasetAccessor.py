@@ -18,7 +18,7 @@ class DatasetAccessor:
         self.dataset = Dataset()
 
     def chooseDataset(self):
-        print("Hi! Please choose from the available datasets:")
+        print("\nHi! Please choose from the available datasets:\n")
         print("Movielens-100k: type in 100k or ml-100k")
         print("Movielens-1m: type in 1m or ml-1m")
         print("Jester (dataset 2): type in j or jester")
@@ -35,10 +35,11 @@ class DatasetAccessor:
         elif inputDatasetString == NETFLIX_SHORT or inputDatasetString == NETFLIX_LONG:
             datasetType = DatasetType.NETFLIX_PRIZE_DATASET
         else:
-            print("The given input didn't match any available dataset name! Returning...")
+            print("The given input didn't match any available dataset name! Returning...\n")
             return
 
         self.dataset.loadDataset(datasetType)
+        print()
 
     # create train and validation sets here from the dataset
     def processChosenDataset(self, testSetSize):
@@ -127,6 +128,23 @@ class DatasetAccessor:
             rankings[movieID] = rank
             rank += 1
         return rankings
+
+    def getAntiTestSetForUser(self, trainSet, testSubject=85):
+        fill = trainSet.global_mean
+        anti_testset = []
+        u = trainSet.to_inner_uid(str(testSubject))
+        user_items = set([j for (j, _) in trainSet.ur[u]])
+        # anti_testset += [
+        #     (trainSet.to_raw_uid(u), trainSet.to_raw_iid(i), fill)
+        #     for i in trainSet.all_items()
+        #     if i not in user_items
+        # ]
+
+        anti_testset += [(trainSet.to_raw_uid(u), trainSet.to_raw_iid(i), fill) for
+                         i in trainSet.all_items() if
+                         i not in user_items]
+
+        return anti_testset
 
     def getDataset(self):
         return self.dataset

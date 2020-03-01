@@ -24,8 +24,8 @@ class RecommenderService:
         popularityRankings = self.getPopularityRankings(dataset.getDatasetType())
         self.addAlgorithmToRecommender(recommenderAlgorithm)
         metricsFromEvaluation = self.evaluate(trainSet, testSet, popularityRankings)
-
-        # self.recommend()
+        antiTestSet = self.datasetAccessor.getAntiTestSetForUser(trainSet)
+        self.recommendTopN(trainSet, antiTestSet)
         self.showMetrics(metricsFromEvaluation)
         # self.plot()
 
@@ -56,14 +56,20 @@ class RecommenderService:
     def evaluate(self, trainSet, testSet, popularityRankings):
         return self.recommender.evaluate(trainSet, testSet, popularityRankings)
 
-    def recommend(self):
-        topN = self.recommender.recommend()
-        print("Will print TopN recommendations here...")
+    def recommendTopN(self, trainSet, antiTestSet, n=10):
+        recommendations = self.recommender.recommend(trainSet, antiTestSet)
+
+        print("\nWe recommend:")
+        for ratings in recommendations[:n]:
+            # print(ml.getMovieName(ratings[0]), ratings[1])
+            print(ratings)
+
+        print()
 
     # prints out all of the metrics info
     def showMetrics(self, metricsFromEvaluation):
         for metrics in metricsFromEvaluation:
-            print("Printing metrics for the algorithm called: {}".format(metrics.getAlgorithmName()))
+            print("\nPrinting metrics for the algorithm called: {}\n".format(metrics.getAlgorithmName()))
             print("RMSE:        {}".format(metrics.getRMSE()))
             print("MAE:         {}".format(metrics.getMAE()))
             print("Coverage:    {}".format(metrics.getCoverage()))

@@ -14,7 +14,7 @@ class Dataset:
         self.testSet = None
 
     def loadDataset(self, datasetType):
-        print("Loading dataset: [{}]".format(datasetType.value))
+        print("Loading dataset: [{}]...START!".format(datasetType.value))
         self.datasetType = datasetType
 
         if datasetType == DatasetType.NETFLIX_PRIZE_DATASET:
@@ -22,7 +22,7 @@ class Dataset:
         else:
             self.dataset = surpriseDataset.load_builtin(datasetType.value)
 
-        print("Loading dataset: [{}] done!".format(datasetType.value))
+        print("Loading dataset: [{}]...DONE!".format(datasetType.value))
 
     def loadNetflixDataset(self):
         # netflixCSVPath = r"D:\Egyetem\Msc\Diplomamunka\Netflix_Prize_Dataset\Netflix_dataframe_to_csv_export.csv"
