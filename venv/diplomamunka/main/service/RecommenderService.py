@@ -1,4 +1,5 @@
 from diplomamunka.main.dao.DatasetAccessor import DatasetAccessor
+from diplomamunka.main.dao.DatasetType import DatasetType
 from diplomamunka.main.service.recommender.Recommender import Recommender
 from diplomamunka.main.service.util.Investigator import Investigator
 from diplomamunka.main.service.util.Metrics import Metrics
@@ -20,12 +21,18 @@ class RecommenderService:
         self.chooseDataset()
         self.processChosenDataset(0.25)
         dataset, trainSet, testSet = self.getDataset(), self.getTrainSet(), self.getTestSet()
+        # should become: recommenderAlgorithms
         recommenderAlgorithm = self.investigateChosenDataset(dataset)
         popularityRankings = self.getPopularityRankings(dataset.getDatasetType())
+
+        # use a for loop instead
         self.addAlgorithmToRecommender(recommenderAlgorithm)
         metricsFromEvaluation = self.evaluate(trainSet, testSet, popularityRankings)
-        antiTestSet = self.datasetAccessor.getAntiTestSetForUser(trainSet)
-        self.recommendTopN(trainSet, antiTestSet)
+
+        if dataset == DatasetType.MOVIELENS_100K or dataset == DatasetType.MOVIELENS_1m:
+            antiTestSet = self.datasetAccessor.getAntiTestSetForUser(trainSet)
+            self.recommendTopN(trainSet, antiTestSet)
+
         self.showMetrics(metricsFromEvaluation)
         # self.plot()
 
@@ -57,12 +64,16 @@ class RecommenderService:
         return self.recommender.evaluate(trainSet, testSet, popularityRankings)
 
     def recommendTopN(self, trainSet, antiTestSet, n=10):
-        recommendations = self.recommender.recommend(trainSet, antiTestSet)
+        recommendationsFromEveryAlgorithm = self.recommender.recommend(trainSet, antiTestSet)
 
-        print("\nWe recommend:")
-        for ratings in recommendations[:n]:
-            # print(ml.getMovieName(ratings[0]), ratings[1])
-            print(ratings)
+        print("\nWe recommend the followings:\n")
+        for algorithmName in recommendationsFromEveryAlgorithm:
+            print("The [{}] algorithm recommends:".format(algorithmName))
+            recommendationsFromOneAlgorithm = recommendationsFromEveryAlgorithm[algorithmName]
+
+            self.datasetAccessor.loadMovieIDsAndNames()
+            for ratings in recommendationsFromOneAlgorithm[:n]:
+                print(self.datasetAccessor.getMovieNameByID(ratings[0]), ratings[1])
 
         print()
 

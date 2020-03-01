@@ -14,6 +14,9 @@ from diplomamunka.main.service.recommender.algorithm.AlgorithmType import Algori
 
 class DatasetAccessor:
 
+    movieID_to_name = {}
+    name_to_movieID = {}
+
     def __init__(self):
         self.dataset = Dataset()
 
@@ -146,6 +149,16 @@ class DatasetAccessor:
 
         return anti_testset
 
+    def loadMovieIDsAndNames(self):
+        with open('D:/Other/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Datasets/MovieLens/100k/csv/movies.csv', newline='', encoding='ISO-8859-1') as csvfile:
+            movieReader = csv.reader(csvfile)
+            next(movieReader)  # Skip header line
+            for row in movieReader:
+                movieID = int(row[0])
+                movieName = row[1]
+                self.movieID_to_name[movieID] = movieName
+                self.name_to_movieID[movieName] = movieID
+
     def getDataset(self):
         return self.dataset
 
@@ -154,3 +167,9 @@ class DatasetAccessor:
 
     def getTestSet(self):
         return self.dataset.getTestSet()
+
+    def getMovieNameByID(self, movieID):
+        return self.movieID_to_name[movieID] if movieID in self.movieID_to_name else ""
+
+    def getMovieIDByName(self, movieName):
+        return self.name_to_movieID[movieName] if movieName in self.name_to_movieID else ""
