@@ -22,17 +22,11 @@ class RecommenderService:
         dataset, trainSet, testSet = self.getDataset(), self.getTrainSet(), self.getTestSet()
         recommenderAlgorithm = self.investigateChosenDataset(dataset)
         popularityRankings = self.getPopularityRankings(dataset.getDatasetType())
-
-        # print(popularityRankings)
-
         self.addAlgorithmToRecommender(recommenderAlgorithm)
         metricsFromEvaluation = self.evaluate(trainSet, testSet, popularityRankings)
 
-        print("MAE: {}".format(metricsFromEvaluation.__getitem__(0).getMAE()))
-        print("Novelty: {}".format(metricsFromEvaluation.__getitem__(0).getNovelty()))
-
         # self.recommend()
-        # self.showMetrics(metricsFromEvaluation)
+        self.showMetrics(metricsFromEvaluation)
         # self.plot()
 
     def chooseDataset(self):
@@ -68,10 +62,22 @@ class RecommenderService:
 
     # prints out all of the metrics info
     def showMetrics(self, metricsFromEvaluation):
-        print("Will show metrics here...")
+        for metrics in metricsFromEvaluation:
+            print("Printing metrics for the algorithm called: {}".format(metrics.getAlgorithmName()))
+            print("RMSE:        {}".format(metrics.getRMSE()))
+            print("MAE:         {}".format(metrics.getMAE()))
+            print("Coverage:    {}".format(metrics.getCoverage()))
+            print("Diversity:   {}".format(metrics.getDiversity()))
+            print("Novelty:     {}".format(metrics.getNovelty()))
+            print("Scalability: {} seconds".format(metrics.getScalability()))
+
+        print("\nLegend:\n")
+        print("RMSE:        Root Mean Squared Error. Lower values mean better accuracy.")
+        print("MAE:         Mean Absolute Error. Lower values mean better accuracy.")
+        print("Coverage:    Ratio of users for whom recommendations above a certain threshold exist. Higher is better.")
+        print("Diversity:   1-S, where S is the average similarity score between every possible pair of recommendations for a given user. Higher means more diverse.")
+        print("Novelty:     Average popularity rank of recommended items. Higher means more novel.")
+        print("Scalability: The time required for the algorithm to evaluate the data.")
 
     def plot(self):
         self.plotter.plot()
-
-    def addMetricsFromArrayToMetricsList(self, otherMetricsList):
-        self.metricsList.extend(otherMetricsList)

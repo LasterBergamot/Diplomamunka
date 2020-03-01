@@ -20,18 +20,18 @@ class Metrics:
         self.scalability = 0.0
 
     def MAE(self, predictions):
-        print("Calculating Mean Absolute Error...")
+        print("Calculating Mean Absolute Error...START!")
         self.mae = accuracy.mae(predictions, verbose=False)
-        print("Calculating Mean Absolute Error...Done")
+        print("Calculating Mean Absolute Error...DONE!")
 
     def RMSE(self, predictions):
-        print("Calculating Root Mean Squared Error...")
+        print("Calculating Root Mean Squared Error...START!")
         self.rmse = accuracy.rmse(predictions, verbose=False)
-        print("Calculating Root Mean Squared Error...Done")
+        print("Calculating Root Mean Squared Error...DONE!")
 
     # What percentage of users have at least one "good" recommendation
     def Coverage(self, topNPredicted, numberOfUsers, ratingThreshold=0):
-        print("Calculating Coverage...")
+        print("Calculating Coverage...START!")
         hits = 0
         for userID in topNPredicted.keys():
             hit = False
@@ -43,10 +43,10 @@ class Metrics:
                 hits += 1
 
         self.coverage = hits / numberOfUsers
-        print("Calculating Coverage...Done")
+        print("Calculating Coverage...DONE!")
 
     def Diversity(self, topNPredicted, similarityMatrix):
-        print("Calculating Diversity...")
+        print("Calculating Diversity...START!")
 
         n = 0
         total = 0
@@ -64,10 +64,10 @@ class Metrics:
 
         S = total / n
         self.diversity = (1 - S)
-        print("Calculating Diversity...Done")
+        print("Calculating Diversity...DONE!")
 
     def Novelty(self, topNPredicted, popularityRankings):
-        print("Calculating Novelty...")
+        print("Calculating Novelty...START!")
 
         n = 0
         total = 0
@@ -78,7 +78,7 @@ class Metrics:
                 total += rank
                 n += 1
         self.novelty = total / n
-        print("Calculating Novelty...Done")
+        print("Calculating Novelty...DONE!")
 
     # Scalability = time requirement of evaluation
     def setScalability(self, runTimeOfAlgorithm):
@@ -126,3 +126,6 @@ class Metrics:
 
     def getMetricsObject(self):
         return self
+
+    def getAlgorithmName(self):
+        return self.algorithmName
