@@ -1,15 +1,11 @@
 import csv
-import os
 from collections import namedtuple, defaultdict
-from os.path import join
 
 import pandas as pd
-
 from diplomamunka.main.dao.Dataset import Dataset
 from diplomamunka.main.dao.DatasetConstants import MOVIELENS_100k_SHORT, MOVIELENS_100k_LONG, MOVIELENS_1m_SHORT, \
     MOVIELENS_1m_LONG, JESTER_SHORT, JESTER_LONG, NETFLIX_SHORT, NETFLIX_LONG
 from diplomamunka.main.dao.DatasetType import DatasetType
-from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
 
 
 class DatasetAccessor:
