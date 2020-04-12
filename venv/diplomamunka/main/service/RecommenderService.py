@@ -4,7 +4,7 @@ from diplomamunka.main.dao.DatasetConstants import MOVIELENS_100k_SHORT, MOVIELE
 from diplomamunka.main.dao.DatasetType import DatasetType
 from diplomamunka.main.service.recommender.Recommender import Recommender
 from diplomamunka.main.service.recommender.algorithm.AlgorithmAndAccessor import AlgorithmAndAccessor
-from diplomamunka.main.service.util.Investigator import Investigator
+from diplomamunka.main.service.util.Investigator import Investigator, investigateChosenDataset
 from diplomamunka.main.service.util.Metrics import Metrics
 from diplomamunka.main.service.util.Plotter import Plotter
 
@@ -107,7 +107,7 @@ class RecommenderService:
         # for loop: loop through the list/set created above
         # select an algorithm for each through investigation
         for datasetAccessor in datasetAccessors:
-            recommenderAlgorithm = self.investigateChosenDataset(datasetAccessor)
+            recommenderAlgorithm = investigateChosenDataset(datasetAccessor)
 
             # add algorithm and the dataset accessor as well
             self.addAlgorithmAndAccessorToRecommender(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
@@ -135,9 +135,6 @@ class RecommenderService:
 
         # plot the data for each alg
         # self.plot()
-
-    def investigateChosenDataset(self, datasetAccessor):
-        return self.investigator.investigateChosenDataset(datasetAccessor)
 
     def addAlgorithmAndAccessorToRecommender(self, algorithmAndAccessor):
         self.recommender.addAlgorithmAndAccessor(algorithmAndAccessor)

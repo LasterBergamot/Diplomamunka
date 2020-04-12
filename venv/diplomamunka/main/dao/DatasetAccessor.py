@@ -1,4 +1,5 @@
 import csv
+import re
 from collections import namedtuple, defaultdict
 
 import pandas as pd
@@ -32,7 +33,7 @@ class DatasetAccessor:
     def getPopularityRankings(self):
         popularityRankings = None
 
-        if self.datasetType == DatasetType.MOVIELENS_1m or self.datasetType == DatasetType.MOVIELENS_100K:
+        if self.dataset.getDatasetType() == DatasetType.MOVIELENS_1m or self.dataset.getDatasetType() == DatasetType.MOVIELENS_100K:
             popularityRankings = self.createPopularityRanks()
 
         return popularityRankings
@@ -64,13 +65,7 @@ class DatasetAccessor:
         return pd.read_csv(self.getCsvPathForRatings(), header=None, names=['movieId', 'title', 'genres'], usecols=[0, 1, 2])
 
     def getCsvPathForRatings(self):
-        return ML_100K_RATINGS_CSV if self.datasetType == DatasetType.MOVIELENS_100K else ML_1M_RATINGS_CSV
-
-    def loadMovies(self):
-        return pd.read_csv(self.getCsvPathForMovies(), header=None, names=['movieId', 'title', 'genres'], usecols=[0, 1, 2])
-
-    def getCsvPathForMovies(self):
-        return ML_100K_MOVIES_CSV if self.datasetType == DatasetType.MOVIELENS_100K else ML_1M_MOVIES_CSV
+        return ML_100K_RATINGS_CSV if self.dataset.getDatasetType() == DatasetType.MOVIELENS_100K else ML_1M_RATINGS_CSV
 
     def getAntiTestSetForUser(self, testSubject=85):
         trainSet = self.getTrainSet()
@@ -90,17 +85,67 @@ class DatasetAccessor:
 
         return anti_testset
 
-    def getYears(self):
-        movies = self.loadMovies()
-        years = defaultdict(int)
+    # def getYears(self):
+    #     movies = self.loadMovies()
+    #     years = defaultdict(int)
+    #
+    #     return years
 
+    def getYears(self):
+        p = re.compile(r"(?:\((\d{4})\))?\s*$")
+        years = defaultdict(int)
+        with open(self.getCsvPathForMovies(), newline='', encoding='ISO-8859-1') as csvfile:
+            movieReader = csv.reader(csvfile)
+            next(movieReader)
+            for row in movieReader:
+                movieID = int(row[0])
+                title = row[1]
+                m = p.search(title)
+                year = m.group(1)
+                if year:
+                    years[movieID] = int(year)
         return years
 
+    # def getGenres(self):
+    #     movies = self.loadMovies()
+    #     genres = defaultdict(int)
+    #
+    #     return genres
+
     def getGenres(self):
-        movies = self.loadMovies()
-        genres = defaultdict(int)
+        genres = defaultdict(list)
+        genreIDs = {}
+        maxGenreID = 0
+        with open(self.getCsvPathForMovies(), newline='', encoding='ISO-8859-1') as csvfile:
+            movieReader = csv.reader(csvfile)
+            next(movieReader)  # Skip header line
+            for row in movieReader:
+                movieID = int(row[0])
+                genreList = row[2].split('|')
+                genreIDList = []
+                for genre in genreList:
+                    if genre in genreIDs:
+                        genreID = genreIDs[genre]
+                    else:
+                        genreID = maxGenreID
+                        genreIDs[genre] = genreID
+                        maxGenreID += 1
+                    genreIDList.append(genreID)
+                genres[movieID] = genreIDList
+        # Convert integer-encoded genre lists to bitfields that we can treat as vectors
+        for (movieID, genreIDList) in genres.items():
+            bitfield = [0] * maxGenreID
+            for genreID in genreIDList:
+                bitfield[genreID] = 1
+            genres[movieID] = bitfield
 
         return genres
+
+    # def loadMovies(self):
+    #     return pd.read_csv(self.getCsvPathForMovies(), header=None, names=['movieId', 'title', 'genres'], usecols=[0, 1, 2])
+
+    def getCsvPathForMovies(self):
+        return ML_100K_MOVIES_CSV if self.dataset.getDatasetType() == DatasetType.MOVIELENS_100K else ML_1M_MOVIES_CSV
 
     # BUILTIN_DATASETS = {
     #     'ml-100k-movies':

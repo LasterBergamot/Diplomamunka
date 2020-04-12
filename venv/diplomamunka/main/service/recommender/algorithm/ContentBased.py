@@ -2,19 +2,42 @@ import heapq
 import math
 
 import numpy as np
-from diplomamunka.main.dao.DatasetAccessor import DatasetAccessor
 from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
 from surprise import AlgoBase, PredictionImpossible
 
+
+def computeGenreSimilarity(movie1, movie2, genres):
+    genres1 = genres[movie1]
+    genres2 = genres[movie2]
+    similarity = 0.0
+
+    if len(genres1) != 0 and len(genres2) != 0:
+        sumxx, sumxy, sumyy = 0, 0, 0
+
+        for i in range(len(genres1)):
+            x = genres1[i]
+            y = genres2[i]
+            sumxx += x * x
+            sumyy += y * y
+            sumxy += x * y
+
+        similarity = sumxy / math.sqrt(sumxx * sumyy)
+
+    return similarity
+
+def computeYearSimilarity(movie1, movie2, years):
+    diff = abs(years[movie1] - years[movie2])
+    sim = math.exp(-diff / 10.0)
+    return sim
 
 class ContentBased(AlgoBase):
 
     algorithmType = AlgorithmType.CONTENT_BASED
 
-    def __init__(self, k=40, sim_options={}):
+    def __init__(self, datasetAccessor, k=40, sim_options={}):
         AlgoBase.__init__(self)
         self.k = k
-        self.datasetAccessor = DatasetAccessor()
+        self.datasetAccessor = datasetAccessor
 
     def fit(self, trainset):
         AlgoBase.fit(self, trainset)
@@ -22,7 +45,6 @@ class ContentBased(AlgoBase):
         # Compute item similarity matrix based on content attributes
 
         # Load up genre vectors for every movie
-        # ml = MovieLens()
         genres = self.datasetAccessor.getGenres()
         years = self.datasetAccessor.getYears()
 
@@ -37,32 +59,14 @@ class ContentBased(AlgoBase):
             for otherRating in range(thisRating + 1, self.trainset.n_items):
                 thisMovieID = int(self.trainset.to_raw_iid(thisRating))
                 otherMovieID = int(self.trainset.to_raw_iid(otherRating))
-                genreSimilarity = self.computeGenreSimilarity(thisMovieID, otherMovieID, genres)
-                yearSimilarity = self.computeYearSimilarity(thisMovieID, otherMovieID, years)
+                genreSimilarity = computeGenreSimilarity(thisMovieID, otherMovieID, genres)
+                yearSimilarity = computeYearSimilarity(thisMovieID, otherMovieID, years)
                 self.similarities[thisRating, otherRating] = genreSimilarity * yearSimilarity
                 self.similarities[otherRating, thisRating] = self.similarities[thisRating, otherRating]
 
         print("...done.")
 
         return self
-
-    def computeGenreSimilarity(self, movie1, movie2, genres):
-        genres1 = genres[movie1]
-        genres2 = genres[movie2]
-        sumxx, sumxy, sumyy = 0, 0, 0
-        for i in range(len(genres1)):
-            x = genres1[i]
-            y = genres2[i]
-            sumxx += x * x
-            sumyy += y * y
-            sumxy += x * y
-
-        return sumxy / math.sqrt(sumxx * sumyy)
-
-    def computeYearSimilarity(self, movie1, movie2, years):
-        diff = abs(years[movie1] - years[movie2])
-        sim = math.exp(-diff / 10.0)
-        return sim
 
     def estimate(self, u, i):
 
