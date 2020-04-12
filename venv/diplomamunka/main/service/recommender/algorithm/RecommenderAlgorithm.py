@@ -1,6 +1,6 @@
 import time
 
-from diplomamunka.main.service.util.Metrics import Metrics
+from diplomamunka.main.service.util.Metrics import Metrics, calculateTopN
 from surprise import KNNBaseline
 
 
@@ -14,7 +14,7 @@ class RecommenderAlgorithm:
     # use stopwatch here
     # will return metrics here
     def evaluate(self, trainSet, testSet, popularityRankings):
-        print("\nEvaluating the dataset inside the algorithm called: {}...START!\n".format(self.name))
+        print("\nEvaluating dataset {} inside the algorithm called: {}...START!\n".format(self.datasetName, self.name))
         metrics = Metrics(self.name, self.datasetName)
         startTime = time.time()
 
@@ -27,7 +27,7 @@ class RecommenderAlgorithm:
         predictions = self.algorithm.test(testSet)
 
         # Required for Coverage, Diversity and Novelty
-        topNPredicted = metrics.calculateTopN(predictions)
+        topNPredicted = calculateTopN(predictions)
 
         # Required for Diversity
         similarityMatrix = KNNBaseline(sim_options={'name': 'cosine', 'user_based': False})

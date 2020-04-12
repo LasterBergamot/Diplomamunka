@@ -3,7 +3,22 @@ import itertools
 import string
 from collections import defaultdict
 
+from diplomamunka.main.dao.DatasetType import DatasetType
 from surprise import accuracy
+
+
+def calculateTopN(predictions, n=10, minimumRating=4.0):
+    topN = defaultdict(list)
+
+    for userID, movieID, actualRating, estimatedRating, _ in predictions:
+        if estimatedRating >= minimumRating:
+            topN[int(userID)].append((int(movieID), estimatedRating))
+
+    for userID, ratings in topN.items():
+        ratings.sort(key=lambda x: x[1], reverse=True)
+        topN[int(userID)] = ratings[:n]
+
+    return topN
 
 
 class Metrics:
@@ -58,6 +73,13 @@ class Metrics:
             for pair in pairs:
                 movie1 = pair[0][0]
                 movie2 = pair[1][0]
+
+                # need to skip this id, unless to_inner_iid() would throw an exception
+                # because there's only one movie with this id
+                # so, this one would be in either the train set or the test set, but not in both
+                if self.datasetName == DatasetType.MOVIELENS_1m.value and (movie1 == 3280 or movie2 == 3280):
+                    continue
+
                 innerID1 = similarityMatrix.trainset.to_inner_iid(str(movie1))
                 innerID2 = similarityMatrix.trainset.to_inner_iid(str(movie2))
                 similarity = simsMatrix[innerID1][innerID2]
@@ -85,19 +107,6 @@ class Metrics:
     # Scalability = time requirement of evaluation
     def setScalability(self, runTimeOfAlgorithm):
         self.scalability = runTimeOfAlgorithm
-
-    def calculateTopN(self, predictions, n=10, minimumRating=4.0):
-        topN = defaultdict(list)
-
-        for userID, movieID, actualRating, estimatedRating, _ in predictions:
-            if (estimatedRating >= minimumRating):
-                topN[int(userID)].append((int(movieID), estimatedRating))
-
-        for userID, ratings in topN.items():
-            ratings.sort(key=lambda x: x[1], reverse=True)
-            topN[int(userID)] = ratings[:n]
-
-        return topN
 
     def calculateMetrics(self, predictions, topNPredicted, numberOfUsers, similarityMatrix, popularityRankings, ratingThreshold=0):
         self.MAE(predictions)
