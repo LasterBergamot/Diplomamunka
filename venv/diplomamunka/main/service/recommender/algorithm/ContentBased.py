@@ -32,7 +32,7 @@ class ContentBased(AlgoBase):
         self.similarities = np.zeros((self.trainset.n_items, self.trainset.n_items))
 
         for thisRating in range(self.trainset.n_items):
-            if (thisRating % 100 == 0):
+            if thisRating % 100 == 0:
                 print(thisRating, " of ", self.trainset.n_items)
             for otherRating in range(thisRating + 1, self.trainset.n_items):
                 thisMovieID = int(self.trainset.to_raw_iid(thisRating))
@@ -81,11 +81,11 @@ class ContentBased(AlgoBase):
         # Compute average sim score of K neighbors weighted by user ratings
         simTotal = weightedSum = 0
         for (simScore, rating) in k_neighbors:
-            if (simScore > 0):
+            if simScore > 0:
                 simTotal += simScore
                 weightedSum += simScore * rating
 
-        if (simTotal == 0):
+        if simTotal == 0:
             raise PredictionImpossible('No neighbors')
 
         predictedRating = weightedSum / simTotal
