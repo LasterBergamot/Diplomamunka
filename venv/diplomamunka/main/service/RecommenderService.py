@@ -20,42 +20,44 @@ class RecommenderService:
     def start(self):
         # create a list/set of dataset accessors - they have to be unique
         # be able to choose several datasets at the beginning, so put a for loop here and return an array of datasets
-        self.chooseDataset()
+        choosenDatasets = self.chooseDataset()
         # ends here
+
+        print(choosenDatasets)
 
         # a foor loop: loop through all of the dataset accessors
         # process them
-        self.processChosenDataset(0.25)
-        dataset, trainSet, testSet = self.getDataset(), self.getTrainSet(), self.getTestSet()
-        # ends here
-
-        # for loop: loop through the list/set created above
-        # select an algorithm for each through investigation
-        # popularity rankings (optional, for now)
-        # add each alg to the recommender
-        recommenderAlgorithm = self.investigateChosenDataset(dataset)
-
-        # move this inside recommender
-        popularityRankings = self.getPopularityRankings(dataset.getDatasetType())
-
-        # add algorithm and the dataset accessor as well
-        self.addAlgorithmToRecommender(recommenderAlgorithm)
-        # ends here
-
-        # evaluate every alg
-        # since the dataset accessor is passed with the alg, no parameters are required
-        metricsFromEvaluation = self.evaluate(trainSet, testSet, popularityRankings)
-
-        # recommendation is not required right now
-        # if dataset == DatasetType.MOVIELENS_100K or dataset == DatasetType.MOVIELENS_1m:
-        #     antiTestSet = self.datasetAccessor.getAntiTestSetForUser(trainSet)
-        #     self.recommendTopN(trainSet, antiTestSet)
-
-        # print the metrics for each alg
-        self.showMetrics(metricsFromEvaluation)
-
-        # plot the data for each alg
-        # self.plot()
+        # self.processChosenDataset(0.25)
+        # dataset, trainSet, testSet = self.getDataset(), self.getTrainSet(), self.getTestSet()
+        # # ends here
+        #
+        # # for loop: loop through the list/set created above
+        # # select an algorithm for each through investigation
+        # # popularity rankings (optional, for now)
+        # # add each alg to the recommender
+        # recommenderAlgorithm = self.investigateChosenDataset(dataset)
+        #
+        # # move this inside recommender
+        # popularityRankings = self.getPopularityRankings(dataset.getDatasetType())
+        #
+        # # add algorithm and the dataset accessor as well
+        # self.addAlgorithmToRecommender(recommenderAlgorithm)
+        # # ends here
+        #
+        # # evaluate every alg
+        # # since the dataset accessor is passed with the alg, no parameters are required
+        # metricsFromEvaluation = self.evaluate(trainSet, testSet, popularityRankings)
+        #
+        # # recommendation is not required right now
+        # # if dataset == DatasetType.MOVIELENS_100K or dataset == DatasetType.MOVIELENS_1m:
+        # #     antiTestSet = self.datasetAccessor.getAntiTestSetForUser(trainSet)
+        # #     self.recommendTopN(trainSet, antiTestSet)
+        #
+        # # print the metrics for each alg
+        # self.showMetrics(metricsFromEvaluation)
+        #
+        # # plot the data for each alg
+        # # self.plot()
 
     def chooseDataset(self):
         return self.datasetAccessor.chooseDataset()
