@@ -1,5 +1,7 @@
 from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
-from surprise import AlgoBase
+from diplomamunka.main.service.recommender.algorithm.CollaborativeFiltering import CollaborativeFiltering
+from diplomamunka.main.service.recommender.algorithm.ContentBased import ContentBased
+from surprise import AlgoBase, KNNBaseline
 
 
 class Hybrid(AlgoBase):
@@ -25,7 +27,13 @@ class Hybrid(AlgoBase):
         sumWeights = 0
 
         for idx in range(len(self.algorithms)):
-            sumScores += self.algorithms[idx].estimate(u, i) * self.weights[idx]
-            sumWeights += self.weights[idx]
+            if isinstance(self.algorithms[idx], CollaborativeFiltering):
+                est = self.algorithms[idx].estimate(u, i) if isinstance(self.algorithms[idx].estimate(u, i), float) else self.algorithms[idx].estimate(u, i)[0]
+
+                sumScores += est * self.weights[idx]
+                sumWeights += self.weights[idx]
+            elif isinstance(self.algorithms[idx], ContentBased):
+                sumScores += self.algorithms[idx].estimate(u, i) * self.weights[idx]
+                sumWeights += self.weights[idx]
 
         return sumScores / sumWeights

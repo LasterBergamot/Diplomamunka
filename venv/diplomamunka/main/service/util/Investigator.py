@@ -10,12 +10,14 @@ from surprise import KNNBaseline
 # KNN: ratio >= 5%
 # Content-Based: ratio < 5%
 # Hybrid: ratio >= 50%
+from surprise.prediction_algorithms.matrix_factorization import SVDpp
+
 KNN_AND_CONTENT_BASED_THRESHOLD = 0.05
 HYBRID_THRESHOLD = 0.5
 
 
 def getRecommenderAlgorithmForML100k(datasetAccessor):
-    datasetName = datasetAccessor.getDataset().getDatasetType().value
+    # datasetName = datasetAccessor.getDataset().getDatasetType().value
     # recommenderAlgorithm = None
     #
     # if DatasetConstants.ML_100k_RATIO >= HYBRID_THRESHOLD:
@@ -29,24 +31,34 @@ def getRecommenderAlgorithmForML100k(datasetAccessor):
     #     recommenderAlgorithm = RecommenderAlgorithm(ContentBased(datasetAccessor), "ContentBased", datasetName)
     #
     # return recommenderAlgorithm
-    return RecommenderAlgorithm(ContentBased(datasetAccessor), "ContentBased", datasetName)
+    # return RecommenderAlgorithm(ContentBased(datasetAccessor), "ContentBased", datasetName)
+    knn = CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': True}))
+    cb = ContentBased(datasetAccessor)
 
+    return RecommenderAlgorithm(Hybrid([knn, cb], [0.5, 0.5]), "Hybrid: User-based KNN CF and Content-Based KNN", datasetAccessor.getDataset().getDatasetType().value)
 
+# Content-Based cannot be used because of the memory issue
 def getRecommenderAlgorithmForML1m(datasetAccessor):
-    datasetName = datasetAccessor.getDataset().getDatasetType().value
-    recommenderAlgorithm = None
+    # datasetName = datasetAccessor.getDataset().getDatasetType().value
+    # recommenderAlgorithm = None
+    #
+    # if DatasetConstants.ML_1M_RATIO >= HYBRID_THRESHOLD:
+    #     knn = CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': True}))
+    #     cb = ContentBased(datasetAccessor)
+    #
+    #     recommenderAlgorithm = RecommenderAlgorithm(Hybrid([knn, cb], [0.5, 0.5]), "Hybrid: User-based KNN CF and Content-Based KNN", datasetName)
+    # elif DatasetConstants.ML_1M_RATIO >= KNN_AND_CONTENT_BASED_THRESHOLD:
+    #     recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': True})), "KNNBaseline: User-based KNN CF", datasetName)
+    # elif DatasetConstants.ML_1M_RATIO < KNN_AND_CONTENT_BASED_THRESHOLD:
+    #     recommenderAlgorithm = RecommenderAlgorithm(ContentBased(datasetAccessor), "ContentBased", datasetName)
+    #
+    # return recommenderAlgorithm
 
-    if DatasetConstants.ML_1M_RATIO >= HYBRID_THRESHOLD:
-        knn = CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': True}))
-        cb = ContentBased(datasetAccessor)
+    # use algs from knns.py
+    knn = CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': True}))
+    cb = ContentBased(datasetAccessor)
 
-        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([knn, cb], [0.5, 0.5]), "Hybrid: User-based KNN CF and Content-Based KNN", datasetName)
-    elif DatasetConstants.ML_1M_RATIO >= KNN_AND_CONTENT_BASED_THRESHOLD:
-        recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': True})), "KNNBaseline: User-based KNN CF", datasetName)
-    elif DatasetConstants.ML_1M_RATIO < KNN_AND_CONTENT_BASED_THRESHOLD:
-        recommenderAlgorithm = RecommenderAlgorithm(ContentBased(datasetAccessor), "ContentBased", datasetName)
-
-    return recommenderAlgorithm
+    return RecommenderAlgorithm(Hybrid([knn, cb], [0.5, 0.5]), "Hybrid: User-based KNN CF and Content-Based KNN", datasetAccessor.getDataset().getDatasetType().value)
 
 # Hybrid with two KNNs: user and item
 # OR
@@ -57,9 +69,9 @@ def getRecommenderAlgorithmForJester(datasetAccessor):
 
     if DatasetConstants.JESTER_RATIO >= HYBRID_THRESHOLD:
         knnItem = CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': False}))
-        knnUser = CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': True}))
+        cb = ContentBased(datasetAccessor)
 
-        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([knnItem, knnUser], [0.5, 0.5]), "Hybrid: Item- and User-based KNN CF", datasetName)
+        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([knnItem, cb], [0.5, 0.5]), "Hybrid: Item- and User-based KNN CF", datasetName)
     elif DatasetConstants.JESTER_RATIO >= KNN_AND_CONTENT_BASED_THRESHOLD:
         recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': False})), "KNNBaseline: Item-based KNN CF", datasetName)
     elif DatasetConstants.JESTER_RATIO < KNN_AND_CONTENT_BASED_THRESHOLD:
