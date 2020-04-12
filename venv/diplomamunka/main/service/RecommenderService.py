@@ -29,6 +29,7 @@ def chooseDatasets():
     print("Please choose from the available datasets:")
     print("Note: no duplicates will be added!\n")
     while inputString != QUIT_SHORT and inputString != QUIT_LONG:
+        print("To quit: type in q or quit")
         print("Movielens-100k: type in 100k or ml-100k")
         print("Movielens-1m: type in 1m or ml-1m")
         print("Jester (dataset 2): type in j or jester")
@@ -58,7 +59,7 @@ def chooseDatasets():
 # prints out all of the metrics info
 def showMetrics(metricsFromEvaluation):
     for metrics in metricsFromEvaluation:
-        print("\nPrinting metrics for dataset {} with the algorithm called: {}\n".format(metrics.getDatasetName(), metrics.getAlgorithmName()))
+        print("\nPrinting metrics for dataset [{}] with the algorithm called: [{}]\n".format(metrics.getDatasetName(), metrics.getAlgorithmName()))
         print("RMSE:        {}".format(metrics.getRMSE()))
         print("MAE:         {}".format(metrics.getMAE()))
         print("Coverage:    {}".format(metrics.getCoverage()))
@@ -118,7 +119,7 @@ class RecommenderService:
             algorithm = algorithmAndAccessor.getRecommenderAlgorithm()
             accessor = algorithmAndAccessor.getDatasetAccessor()
 
-            print("Algorithm selected for dataset {}: {}".format(accessor.getDatasetType().value, algorithm.getAlgorithmName()))
+            print("Algorithm selected for dataset [{}]: [{}]".format(accessor.getDatasetType().value, algorithm.getAlgorithmName()))
 
         # evaluate every alg
         # since the dataset accessor is passed with the alg, no parameters are required

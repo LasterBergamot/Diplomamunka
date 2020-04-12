@@ -14,7 +14,7 @@ class RecommenderAlgorithm:
     # use stopwatch here
     # will return metrics here
     def evaluate(self, trainSet, testSet, popularityRankings):
-        print("\nEvaluating dataset {} inside the algorithm called: {}...START!\n".format(self.datasetName, self.name))
+        print("\nEvaluating dataset [{}] using algorithm [{}]...START!\n".format(self.datasetName, self.name))
         metrics = Metrics(self.name, self.datasetName)
         startTime = time.time()
 
@@ -43,7 +43,7 @@ class RecommenderAlgorithm:
         # calculate metrics + add runtime to the Metrics object
         # return with the Metrics object
         metrics.setScalability(wholeProcessInSeconds)
-        print("\nEvaluating the dataset inside the algorithm called: {}...DONE!\n".format(self.name))
+        print("\nEvaluating dataset [{}] using algorithm [{}]...DONE!\n".format(self.datasetName, self.name))
         return metrics
 
     def getAlgorithm(self):
