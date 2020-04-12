@@ -10,7 +10,6 @@ from diplomamunka.main.dao.DatasetType import DatasetType
 QUIT_LONG = "quit"
 QUIT_SHORT = "q"
 
-
 class DatasetAccessor:
 
     movieID_to_name = {}
@@ -19,41 +18,8 @@ class DatasetAccessor:
     def __init__(self):
         self.dataset = Dataset()
 
-    def chooseDataset(self):
-        choosenDatasets = set()
-        inputString = ""
-
-        print("\nHi!")
-
-        while inputString != QUIT_SHORT and inputString != QUIT_LONG:
-            print("Please choose from the available datasets:")
-            print("Note: no duplicates will be added!\n")
-            print("Movielens-100k: type in 100k or ml-100k")
-            print("Movielens-1m: type in 1m or ml-1m")
-            print("Jester (dataset 2): type in j or jester")
-            print("Netflix Prize dataset: type in n or netflix")
-            # Instead of Netflix (??) the Book-Crossing Dataset will come here
-            inputString = input()
-
-            if inputString == MOVIELENS_100k_SHORT or inputString == MOVIELENS_100k_LONG:
-                choosenDatasets.add(DatasetType.MOVIELENS_100K)
-                print(DatasetType.MOVIELENS_100K.value + " added!\n")
-            elif MOVIELENS_1m_SHORT == inputString or inputString == MOVIELENS_1m_LONG:
-                choosenDatasets.add(DatasetType.MOVIELENS_1m)
-                print(DatasetType.MOVIELENS_1m.value + " added!\n")
-            elif inputString == JESTER_SHORT or inputString == JESTER_LONG:
-                choosenDatasets.add(DatasetType.JESTER)
-                print(DatasetType.JESTER.value + " added!\n")
-            elif inputString == NETFLIX_SHORT or inputString == NETFLIX_LONG:
-                choosenDatasets.add(DatasetType.NETFLIX_PRIZE_DATASET)
-                print(DatasetType.NETFLIX_PRIZE_DATASET.value + " added!\n")
-            elif inputString == QUIT_SHORT or inputString == QUIT_LONG:
-                print("Quitting!")
-            else:
-                print("The given input didn't match any available dataset name!\n")
-
-        # self.dataset.loadDataset(datasetType)
-        return choosenDatasets
+    def loadDataset(self, datasetType):
+        self.dataset.loadDataset(datasetType)
 
     # create train and validation sets here from the dataset
     def processChosenDataset(self, testSetSize):
