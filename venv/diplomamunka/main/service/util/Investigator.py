@@ -6,6 +6,6 @@ from surprise import KNNBaseline
 class Investigator:
 
     # could return with several algorithm
-    def investigateChosenDataset(self, dataset):
+    def investigateChosenDataset(self, datasetAccessor):
         print("Will investigate the sparsity of the chosen dataset...")
-        return RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': False})), "KNNBaseline")
+        return RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'cosine', 'user_based': False})), "KNNBaseline", datasetAccessor.getDatasetType().value)

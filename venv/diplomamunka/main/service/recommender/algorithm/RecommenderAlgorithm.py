@@ -6,15 +6,16 @@ from surprise import KNNBaseline
 
 class RecommenderAlgorithm:
 
-    def __init__(self, algorithm, name):
+    def __init__(self, algorithm, name, datasetName):
         self.algorithm = algorithm
         self.name = name
+        self.datasetName = datasetName
 
     # use stopwatch here
     # will return metrics here
     def evaluate(self, trainSet, testSet, popularityRankings):
         print("\nEvaluating the dataset inside the algorithm called: {}...START!\n".format(self.name))
-        metrics = Metrics(self.name)
+        metrics = Metrics(self.name, self.datasetName)
         startTime = time.time()
 
         # do some stuff here
@@ -49,4 +50,4 @@ class RecommenderAlgorithm:
         return self.algorithm
 
     def getAlgorithmName(self):
-        return self.algorithm
+        return self.name

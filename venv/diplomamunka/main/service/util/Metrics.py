@@ -9,9 +9,11 @@ from surprise import accuracy
 class Metrics:
 
     algorithmName: string
+    datasetName: string
 
-    def __init__(self, algorithmName=None):
+    def __init__(self, algorithmName=None, datasetName=None):
         self.algorithmName = algorithmName
+        self.datasetName = datasetName
         self.mae = 0.0
         self.rmse = 0.0
         self.coverage = 0.0
@@ -103,7 +105,7 @@ class Metrics:
         self.Coverage(topNPredicted, numberOfUsers, ratingThreshold)
         self.Diversity(topNPredicted, similarityMatrix)
 
-        if (popularityRankings != None):
+        if popularityRankings is not None:
             self.Novelty(topNPredicted, popularityRankings)
 
     def getMAE(self):
@@ -129,3 +131,6 @@ class Metrics:
 
     def getAlgorithmName(self):
         return self.algorithmName
+
+    def getDatasetName(self):
+        return self.datasetName

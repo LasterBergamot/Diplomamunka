@@ -3,6 +3,7 @@ from diplomamunka.main.dao.DatasetConstants import MOVIELENS_100k_SHORT, MOVIELE
     MOVIELENS_1m_SHORT, JESTER_SHORT, JESTER_LONG, NETFLIX_SHORT, NETFLIX_LONG
 from diplomamunka.main.dao.DatasetType import DatasetType
 from diplomamunka.main.service.recommender.Recommender import Recommender
+from diplomamunka.main.service.recommender.algorithm.AlgorithmAndAccessor import AlgorithmAndAccessor
 from diplomamunka.main.service.util.Investigator import Investigator
 from diplomamunka.main.service.util.Metrics import Metrics
 from diplomamunka.main.service.util.Plotter import Plotter
@@ -57,7 +58,7 @@ def chooseDatasets():
 # prints out all of the metrics info
 def showMetrics(metricsFromEvaluation):
     for metrics in metricsFromEvaluation:
-        print("\nPrinting metrics for the algorithm called: {}\n".format(metrics.getAlgorithmName()))
+        print("\nPrinting metrics for dataset {} with the algorithm called: {}\n".format(metrics.getDatasetName(), metrics.getAlgorithmName()))
         print("RMSE:        {}".format(metrics.getRMSE()))
         print("MAE:         {}".format(metrics.getMAE()))
         print("Coverage:    {}".format(metrics.getCoverage()))
@@ -85,8 +86,9 @@ class RecommenderService:
         self.plotter = Plotter()
 
     def start(self):
-        # create a list/set of dataset accessors - they have to be unique
-        # be able to choose several datasets at the beginning, so put a for loop here and return an array of datasets
+        # create a set of datasets - they have to be unique
+        # create a list of dataset accessors
+        # be able to choose several datasets at the beginning, so put a for loop here and return a set of datasets
         choosenDatasets = chooseDatasets()
         datasetAccessors = createDatasetAccessorsFromDatasets(choosenDatasets)
         # ends here
@@ -95,63 +97,52 @@ class RecommenderService:
         for dataset in choosenDatasets:
             print(dataset.value)
 
-        # a foor loop: loop through all of the dataset accessors
-        # process them
-        # self.processChosenDataset(0.25)
-        # dataset, trainSet, testSet = self.getDataset(), self.getTrainSet(), self.getTestSet()
-        # # ends here
-        #
-        # # for loop: loop through the list/set created above
-        # # select an algorithm for each through investigation
-        # # popularity rankings (optional, for now)
-        # # add each alg to the recommender
-        # recommenderAlgorithm = self.investigateChosenDataset(dataset)
-        #
-        # # move this inside recommender
-        # popularityRankings = self.getPopularityRankings(dataset.getDatasetType())
-        #
-        # # add algorithm and the dataset accessor as well
-        # self.addAlgorithmToRecommender(recommenderAlgorithm)
-        # # ends here
-        #
-        # # evaluate every alg
-        # # since the dataset accessor is passed with the alg, no parameters are required
-        # metricsFromEvaluation = self.evaluate(trainSet, testSet, popularityRankings)
-        #
-        # # recommendation is not required right now
-        # # if dataset == DatasetType.MOVIELENS_100K or dataset == DatasetType.MOVIELENS_1m:
-        # #     antiTestSet = self.datasetAccessor.getAntiTestSetForUser(trainSet)
-        # #     self.recommendTopN(trainSet, antiTestSet)
-        #
-        # # print the metrics for each alg
-        # self.showMetrics(metricsFromEvaluation)
-        #
-        # # plot the data for each alg
-        # # self.plot()
+        # a for loop: loop through all of the dataset accessors
+        # create train and test sets
+        for datasetAccessor in datasetAccessors:
+            datasetAccessor.processChosenDataset(0.25)
+        # ends here
 
-    def processChosenDataset(self, testSetSize):
-        self.datasetAccessor.processChosenDataset(testSetSize)
+        # for loop: loop through the list/set created above
+        # select an algorithm for each through investigation
+        for datasetAccessor in datasetAccessors:
+            recommenderAlgorithm = self.investigateChosenDataset(datasetAccessor)
 
-    def getDataset(self):
-        return self.datasetAccessor.getDataset()
+            # add algorithm and the dataset accessor as well
+            self.addAlgorithmAndAccessorToRecommender(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
+        # ends here
 
-    def getTrainSet(self):
-        return self.datasetAccessor.getTrainSet()
+        print("Selected algorithms with datasets:")
+        algorithmsAndAccessors = self.recommender.getAlgorithmsAndAccessors()
+        for algorithmAndAccessor in algorithmsAndAccessors:
+            algorithm = algorithmAndAccessor.getRecommenderAlgorithm()
+            accessor = algorithmAndAccessor.getDatasetAccessor()
 
-    def getTestSet(self):
-        return self.datasetAccessor.getTestSet()
+            print("Algorithm selected for dataset {}: {}".format(accessor.getDatasetType().value, algorithm.getAlgorithmName()))
 
-    def investigateChosenDataset(self, dataset):
-        return self.investigator.investigateChosenDataset(dataset)
+        # evaluate every alg
+        # since the dataset accessor is passed with the alg, no parameters are required
+        metricsFromEvaluation = self.evaluate()
 
-    def getPopularityRankings(self, datasetType):
-        return self.datasetAccessor.getPopularityRankings(datasetType)
+        # recommendation is not required right now
+        # if dataset == DatasetType.MOVIELENS_100K or dataset == DatasetType.MOVIELENS_1m:
+        #     antiTestSet = self.datasetAccessor.getAntiTestSetForUser(trainSet)
+        #     self.recommendTopN(trainSet, antiTestSet)
 
-    def addAlgorithmToRecommender(self, algorithm):
-        self.recommender.addAlgorithm(algorithm)
+        # print the metrics for each alg
+        showMetrics(metricsFromEvaluation)
 
-    def evaluate(self, trainSet, testSet, popularityRankings):
-        return self.recommender.evaluate(trainSet, testSet, popularityRankings)
+        # plot the data for each alg
+        # self.plot()
+
+    def investigateChosenDataset(self, datasetAccessor):
+        return self.investigator.investigateChosenDataset(datasetAccessor)
+
+    def addAlgorithmAndAccessorToRecommender(self, algorithmAndAccessor):
+        self.recommender.addAlgorithmAndAccessor(algorithmAndAccessor)
+
+    def evaluate(self):
+        return self.recommender.evaluate()
 
     def recommendTopN(self, trainSet, antiTestSet, n=10):
         recommendationsFromEveryAlgorithm = self.recommender.recommend(trainSet, antiTestSet)

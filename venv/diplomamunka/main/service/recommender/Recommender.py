@@ -3,17 +3,23 @@ from collections import defaultdict
 
 class Recommender:
 
-    algorithms = []
+    algorithmsAndAccessors = []
 
-    def addAlgorithm(self, algorithm):
-        self.algorithms.append(algorithm)
+    def addAlgorithmAndAccessor(self, algorithmAndAccessor):
+        self.algorithmsAndAccessors.append(algorithmAndAccessor)
 
     # evaluates all of the algorithms, and returns with a list of Metrics objects
-    def evaluate(self, trainSet, testSet, popularityRankings):
+    def evaluate(self):
         print("\nEvaluating every algorithm...START!\n")
         metricsFromAlgorithms = []
 
-        for algorithm in self.algorithms:
+        for algorithmAndAccessor in self.algorithmsAndAccessors:
+            algorithm = algorithmAndAccessor.getRecommenderAlgorithm()
+            accessor = algorithmAndAccessor.getDatasetAccessor()
+            trainSet = accessor.getTrainSet()
+            testSet = accessor.getTestSet()
+            popularityRankings = accessor.getPopularityRankings()
+
             metricsFromAlgorithms.append(algorithm.evaluate(trainSet, testSet, popularityRankings))
 
         print("\nEvaluating every algorithm...DONE!\n")
@@ -24,7 +30,8 @@ class Recommender:
         print("\nCreating recommendations...START!\n")
         recommendationsDictionary = {}
         
-        for algorithm in self.algorithms:
+        for algorithmAndAccessor in self.algorithmsAndAccessors:
+            algorithm = algorithmAndAccessor.getRecommenderAlgorithm()
             print("\nCreating recommendations with the algorithm called: {}...START!\n".format(algorithm.name))
             algorithm.getAlgorithm().fit(trainSet)
             predictions = algorithm.getAlgorithm().test(antiTestSet)
@@ -41,3 +48,6 @@ class Recommender:
 
         print("\nCreating recommendations...DONE!\n")
         return recommendationsDictionary
+
+    def getAlgorithmsAndAccessors(self):
+        return self.algorithmsAndAccessors
