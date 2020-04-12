@@ -18,13 +18,10 @@ class DatasetAccessor:
     movieID_to_name = {}
     name_to_movieID = {}
 
-    datasetType: DatasetType
-
     def __init__(self):
         self.dataset = Dataset()
 
     def loadDataset(self, datasetType):
-        self.datasetType = datasetType
         self.dataset.loadDataset(datasetType)
 
     # create train and validation sets here from the dataset
@@ -137,9 +134,6 @@ class DatasetAccessor:
                 movieName = row[1]
                 self.movieID_to_name[movieID] = movieName
                 self.name_to_movieID[movieName] = movieID
-
-    def getDatasetType(self):
-        return self.datasetType
 
     def getDataset(self):
         return self.dataset

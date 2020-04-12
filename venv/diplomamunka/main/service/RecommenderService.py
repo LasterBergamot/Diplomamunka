@@ -119,7 +119,7 @@ class RecommenderService:
             algorithm = algorithmAndAccessor.getRecommenderAlgorithm()
             accessor = algorithmAndAccessor.getDatasetAccessor()
 
-            print("Algorithm selected for dataset [{}]: [{}]".format(accessor.getDatasetType().value, algorithm.getAlgorithmName()))
+            print("Algorithm selected for dataset [{}]: [{}]".format(accessor.getDataset().getDatasetType().value, algorithm.getAlgorithmName()))
 
         # evaluate every alg
         # since the dataset accessor is passed with the alg, no parameters are required
