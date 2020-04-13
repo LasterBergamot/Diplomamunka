@@ -4,9 +4,14 @@ from diplomamunka.main.dao.DatasetConstants import MOVIELENS_100k_SHORT, MOVIELE
 from diplomamunka.main.dao.DatasetType import DatasetType
 from diplomamunka.main.service.recommender.Recommender import Recommender
 from diplomamunka.main.service.recommender.algorithm.AlgorithmAndAccessor import AlgorithmAndAccessor
+from diplomamunka.main.service.recommender.algorithm.CollaborativeFiltering import CollaborativeFiltering
+from diplomamunka.main.service.recommender.algorithm.RecommenderAlgorithm import RecommenderAlgorithm
 from diplomamunka.main.service.util.Investigator import Investigator, investigateChosenDataset
 from diplomamunka.main.service.util.Metrics import Metrics
 from diplomamunka.main.service.util.Plotter import Plotter
+from surprise import KNNBasic, KNNWithMeans, KNNBaseline, KNNWithZScore
+from surprise.prediction_algorithms.matrix_factorization import SVD, SVDpp
+
 
 def addDatasetAccessorToSet(datasetAccessors, datasetType):
     datasetAccessor = DatasetAccessor()
@@ -158,3 +163,55 @@ class RecommenderService:
 
     def plot(self):
         self.plotter.plot()
+
+    def tester(self):
+        print("Testing...START!")
+        choosenDatasets = chooseDatasets()
+        datasetAccessors = []
+
+        for dataset in choosenDatasets:
+            datasetAccessor = DatasetAccessor()
+            datasetAccessor.loadDataset(dataset)
+            datasetAccessors.append(datasetAccessor)
+
+        print("The selected datasets:")
+        for dataset in choosenDatasets:
+            print(dataset.value)
+
+        for datasetAccessor in datasetAccessors:
+            datasetAccessor.processChosenDataset(0.25)
+
+        algorithms = [
+            RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF - Pearson", ""),
+            # RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': True})), "KNNBasic: User-based CF - Pearson", ""),
+            RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithMeans: Item-based CF - Pearson", ""),
+            # RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithMeans: User-based CF - Pearson", ""),
+            RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': False})), "KNNBaseline: Item-based CF - Pearson", ""),
+            # RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': True})), "KNNBaseline: User-based CF - Pearson", ""),
+            RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithZScore: Item-based CF - Pearson", ""),
+            # RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithZScore: User-based CF - Pearson", ""),
+            RecommenderAlgorithm(SVD(), "SVD", "")
+        ]
+
+        for datasetAccessor in datasetAccessors:
+            datasetName = datasetAccessor.getDataset().getDatasetType().value
+
+            for algorithm in algorithms:
+                recommenderAlgorithm = algorithm
+                recommenderAlgorithm.setDatasetName(datasetName)
+
+                self.addAlgorithmAndAccessorToRecommender(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
+
+        print("Selected algorithms with datasets:")
+        algorithmsAndAccessors = self.recommender.getAlgorithmsAndAccessors()
+        for algorithmAndAccessor in algorithmsAndAccessors:
+            algorithm = algorithmAndAccessor.getRecommenderAlgorithm()
+            accessor = algorithmAndAccessor.getDatasetAccessor()
+
+            print("Algorithm selected for dataset [{}]: [{}]".format(accessor.getDataset().getDatasetType().value, algorithm.getAlgorithmName()))
+
+        metricsFromEvaluation = self.evaluate()
+
+        showMetrics(metricsFromEvaluation)
+
+        print("Testing...DONE!")

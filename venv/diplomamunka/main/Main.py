@@ -8,10 +8,12 @@ def main():
     # could create a version without the investigator, so the user could choose the algorithm manually
 
     recommenderService = RecommenderService()
-    recommenderService.start()
+    # recommenderService.start()
+    recommenderService.tester()
 
     # preprocessor = Preprocessor()
     # preprocessor.makeNetflixDatasetUsable()
+
 
 if __name__ == "__main__":
     main()

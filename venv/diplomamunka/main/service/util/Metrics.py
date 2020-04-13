@@ -77,7 +77,7 @@ class Metrics:
                 # need to skip this id, unless to_inner_iid() would throw an exception
                 # because there's only one movie with this id
                 # so, this one would be in either the train set or the test set, but not in both
-                if self.datasetName == DatasetType.MOVIELENS_1m.value and (movie1 == 3280 or movie2 == 3280):
+                if movie1 == 3280 or movie2 == 3280:
                     continue
 
                 innerID1 = similarityMatrix.trainset.to_inner_iid(str(movie1))

@@ -51,3 +51,6 @@ class RecommenderAlgorithm:
 
     def getAlgorithmName(self):
         return self.name
+
+    def setDatasetName(self, datasetName):
+        self.datasetName = datasetName
