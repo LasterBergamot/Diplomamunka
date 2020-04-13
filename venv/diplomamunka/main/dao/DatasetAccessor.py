@@ -15,6 +15,28 @@ ML_100K_RATINGS_CSV = 'D:/Other/Hobby/Programming/Workspaces/PyCharm_Workspace/D
 QUIT_LONG = "quit"
 QUIT_SHORT = "q"
 
+
+def createPopularityRankingsForJester():
+    ratings = defaultdict(int)
+    rankings = defaultdict(int)
+    jesterCsvPath = 'D:/Other/Hobby/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Datasets/Jester/jester_ratings.csv'
+    rank = 1
+
+    with open(jesterCsvPath, newline='') as csvfile:
+        ratingReader = csv.reader(csvfile)
+        next(ratingReader)
+        for row in ratingReader:
+            if len(row) is not 0:
+                jokeID = int(row[2])
+                ratings[jokeID] += 1
+
+    for jokeID, ratingCount in sorted(ratings.items(), key=lambda x: x[1], reverse=True):
+        rankings[jokeID] = rank
+        rank += 1
+
+    return rankings
+
+
 class DatasetAccessor:
     movieID_to_name = {}
     name_to_movieID = {}
@@ -35,6 +57,8 @@ class DatasetAccessor:
 
         if self.dataset.getDatasetType() == DatasetType.MOVIELENS_1m or self.dataset.getDatasetType() == DatasetType.MOVIELENS_100K:
             popularityRankings = self.createPopularityRanks()
+        elif self.dataset.getDatasetType() == DatasetType.JESTER:
+            popularityRankings = createPopularityRankingsForJester()
 
         return popularityRankings
 
