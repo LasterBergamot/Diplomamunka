@@ -3,7 +3,6 @@ import time
 from diplomamunka.main.service.util.Metrics import Metrics, calculateTopN
 from surprise import KNNBaseline
 
-
 class RecommenderAlgorithm:
 
     def __init__(self, algorithm, name, datasetName):

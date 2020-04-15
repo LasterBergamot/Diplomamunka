@@ -5,7 +5,6 @@ import numpy as np
 from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
 from surprise import AlgoBase, PredictionImpossible
 
-
 def computeGenreSimilarity(movie1, movie2, genres):
     genres1 = genres[movie1]
     genres2 = genres[movie2]
@@ -43,7 +42,6 @@ class ContentBased(AlgoBase):
         AlgoBase.fit(self, trainset)
 
         # Compute item similarity matrix based on content attributes
-
         # Load up genre vectors for every movie
         genres = self.datasetAccessor.getGenres()
         years = self.datasetAccessor.getYears()

@@ -8,9 +8,8 @@ from diplomamunka.main.service.recommender.algorithm.CollaborativeFiltering impo
 from diplomamunka.main.service.recommender.algorithm.RecommenderAlgorithm import RecommenderAlgorithm
 from diplomamunka.main.service.util.Investigator import Investigator, investigateChosenDataset
 from diplomamunka.main.service.util.Metrics import Metrics
-from diplomamunka.main.service.util.Plotter import Plotter
 from surprise import KNNBasic, KNNWithMeans, KNNBaseline, KNNWithZScore
-from surprise.prediction_algorithms.matrix_factorization import SVD, SVDpp
+from surprise.prediction_algorithms.matrix_factorization import SVD
 
 
 def addDatasetAccessorToSet(datasetAccessors, datasetType):
@@ -89,7 +88,6 @@ class RecommenderService:
         self.investigator = Investigator()
         self.recommender = Recommender()
         self.metrics = Metrics()
-        self.plotter = Plotter()
 
     def start(self):
         # create a set of datasets - they have to be unique
@@ -130,39 +128,14 @@ class RecommenderService:
         # since the dataset accessor is passed with the alg, no parameters are required
         metricsFromEvaluation = self.evaluate()
 
-        # recommendation is not required right now
-        # if dataset == DatasetType.MOVIELENS_100K or dataset == DatasetType.MOVIELENS_1m:
-        #     antiTestSet = self.datasetAccessor.getAntiTestSetForUser(trainSet)
-        #     self.recommendTopN(trainSet, antiTestSet)
-
         # print the metrics for each alg
         showMetrics(metricsFromEvaluation)
-
-        # plot the data for each alg
-        # self.plot()
 
     def addAlgorithmAndAccessorToRecommender(self, algorithmAndAccessor):
         self.recommender.addAlgorithmAndAccessor(algorithmAndAccessor)
 
     def evaluate(self):
         return self.recommender.evaluate()
-
-    def recommendTopN(self, trainSet, antiTestSet, n=10):
-        recommendationsFromEveryAlgorithm = self.recommender.recommend(trainSet, antiTestSet)
-
-        print("\nWe recommend the followings:\n")
-        for algorithmName in recommendationsFromEveryAlgorithm:
-            print("The [{}] algorithm recommends:".format(algorithmName))
-            recommendationsFromOneAlgorithm = recommendationsFromEveryAlgorithm[algorithmName]
-
-            self.datasetAccessor.loadMovieIDsAndNames()
-            for ratings in recommendationsFromOneAlgorithm[:n]:
-                print(self.datasetAccessor.getMovieNameByID(ratings[0]), ratings[1])
-
-        print()
-
-    def plot(self):
-        self.plotter.plot()
 
     def tester(self):
         print("Testing...START!")

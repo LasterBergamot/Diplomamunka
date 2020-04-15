@@ -1,11 +1,8 @@
-# Contains every metric data for the given algorithm
 import itertools
 import string
 from collections import defaultdict
 
-from diplomamunka.main.dao.DatasetType import DatasetType
 from surprise import accuracy
-
 
 def calculateTopN(predictions, n=10, minimumRating=4.0):
     topN = defaultdict(list)
@@ -19,7 +16,6 @@ def calculateTopN(predictions, n=10, minimumRating=4.0):
         topN[int(userID)] = ratings[:n]
 
     return topN
-
 
 class Metrics:
 
@@ -53,10 +49,10 @@ class Metrics:
         for userID in topNPredicted.keys():
             hit = False
             for movieID, predictedRating in topNPredicted[userID]:
-                if (predictedRating >= ratingThreshold):
+                if predictedRating >= ratingThreshold:
                     hit = True
                     break
-            if (hit):
+            if hit:
                 hits += 1
 
         self.coverage = hits / numberOfUsers

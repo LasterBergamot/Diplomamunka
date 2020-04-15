@@ -5,23 +5,16 @@ from diplomamunka.main.service.recommender.algorithm.ContentBased import Content
 from diplomamunka.main.service.recommender.algorithm.Hybrid import Hybrid
 from diplomamunka.main.service.recommender.algorithm.RecommenderAlgorithm import RecommenderAlgorithm
 from surprise import KNNBasic, KNNWithMeans
-
-# 5% threshold?
-# KNN: ratio >= 5%
-# Content-Based: ratio < 5%
-# Hybrid: ratio >= 50%
 from surprise.prediction_algorithms.matrix_factorization import SVD
 
 RATINGS_THRESHOLD = 1500000
 RATIO_THRESHOLD = 0.5
-
 
 def getRecommenderAlgorithmForML100k(datasetAccessor):
     datasetName = datasetAccessor.getDataset().getDatasetType().value
 
     return RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF", datasetName)
 
-# Content-Based cannot be used because of the memory issue
 def getRecommenderAlgorithmForML1m(datasetAccessor):
     datasetName = datasetAccessor.getDataset().getDatasetType().value
 
@@ -70,7 +63,6 @@ def investigateChosenDataset(datasetAccessor):
         recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'cosine', 'user_based': False})), "CF: Item-based KNNBasic", datasetType.value)
 
     return recommenderAlgorithm
-
 
 class Investigator:
     pass

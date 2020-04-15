@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from diplomamunka.main.dao.DatasetType import DatasetType
 from surprise import Dataset as surpriseDataset, Reader
 from surprise.model_selection import train_test_split

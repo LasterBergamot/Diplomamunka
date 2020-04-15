@@ -1,7 +1,6 @@
 from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
 from surprise import AlgoBase
 
-
 class CollaborativeFiltering(AlgoBase):
 
     algorithmType = AlgorithmType.COLLABORATIVE_FILTERING
