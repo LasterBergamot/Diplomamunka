@@ -1,14 +1,14 @@
 from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
 from diplomamunka.main.service.recommender.algorithm.CollaborativeFiltering import CollaborativeFiltering
 from diplomamunka.main.service.recommender.algorithm.ContentBased import ContentBased
-from surprise import AlgoBase, KNNBaseline
+from surprise import AlgoBase
 
 
 class Hybrid(AlgoBase):
 
     algorithmType = AlgorithmType.HYBRID
 
-    def __init__(self, algorithms, weights, sim_options={}):
+    def __init__(self, algorithms, weights):
         AlgoBase.__init__(self)
         self.algorithms = algorithms
         self.weights = weights

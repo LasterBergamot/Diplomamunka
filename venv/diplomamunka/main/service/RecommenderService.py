@@ -113,7 +113,7 @@ class RecommenderService:
             recommenderAlgorithm = investigateChosenDataset(datasetAccessor)
 
             # add algorithm and the dataset accessor as well
-            self.addAlgorithmAndAccessorToRecommender(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
+            self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
         # ends here
 
         print("Selected algorithms with datasets:")
@@ -126,16 +126,10 @@ class RecommenderService:
 
         # evaluate every alg
         # since the dataset accessor is passed with the alg, no parameters are required
-        metricsFromEvaluation = self.evaluate()
+        metricsFromEvaluation = self.recommender.evaluate()
 
         # print the metrics for each alg
         showMetrics(metricsFromEvaluation)
-
-    def addAlgorithmAndAccessorToRecommender(self, algorithmAndAccessor):
-        self.recommender.addAlgorithmAndAccessor(algorithmAndAccessor)
-
-    def evaluate(self):
-        return self.recommender.evaluate()
 
     def tester(self):
         print("Testing...START!")
@@ -173,7 +167,7 @@ class RecommenderService:
                 recommenderAlgorithm = algorithm
                 recommenderAlgorithm.setDatasetName(datasetName)
 
-                self.addAlgorithmAndAccessorToRecommender(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
+                self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
 
         print("Selected algorithms with datasets:")
         algorithmsAndAccessors = self.recommender.getAlgorithmsAndAccessors()
@@ -183,7 +177,7 @@ class RecommenderService:
 
             print("Algorithm selected for dataset [{}]: [{}]".format(accessor.getDataset().getDatasetType().value, algorithm.getAlgorithmName()))
 
-        metricsFromEvaluation = self.evaluate()
+        metricsFromEvaluation = self.recommender.evaluate()
 
         showMetrics(metricsFromEvaluation)
 
