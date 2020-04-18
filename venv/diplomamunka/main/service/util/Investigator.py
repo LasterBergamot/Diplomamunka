@@ -39,9 +39,9 @@ def getRecommenderAlgorithm(datasetNumberOfRatings, datasetRatio, datasetAccesso
     # if the matrix is sparse: content-based + KNN CF
     else:
         cb = ContentBased(datasetAccessor)
-        knnItem = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True}))
+        knnUserPearson = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True}))
 
-        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnItem], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: User-based KNNWithMeans", datasetName)
+        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnUserPearson], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: User-based KNNWithMeans", datasetName)
 
     return recommenderAlgorithm
 
