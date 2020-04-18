@@ -34,14 +34,14 @@ def getRecommenderAlgorithm(datasetNumberOfRatings, datasetRatio, datasetAccesso
 
     # if most of the matrix is filled with data CF can be used
     elif datasetRatio >= RATIO_THRESHOLD:
-        recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'cosine', 'user_based': False})), "CF: Item-based KNNWithMeans", datasetName)
+        recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "CF: Item-based KNNWithMeans", datasetName)
 
     # if the matrix is sparse: content-based + KNN CF
     else:
         cb = ContentBased(datasetAccessor)
-        knnItem = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'cosine', 'user_based': False}))
+        knnItem = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True}))
 
-        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnItem], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: Item-based KNNWithMeans", datasetName)
+        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnItem], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: User-based KNNWithMeans", datasetName)
 
     return recommenderAlgorithm
 
