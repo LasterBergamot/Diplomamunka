@@ -1,8 +1,8 @@
 from diplomamunka.main.service.RecommenderService import RecommenderService
 
+
 def main():
-    recommenderService = RecommenderService()
-    recommenderService.start()
+    RecommenderService().start()
 
 
 if __name__ == "__main__":
