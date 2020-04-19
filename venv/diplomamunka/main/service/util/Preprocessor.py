@@ -1,4 +1,5 @@
 import csv
+import os
 import time
 
 import numpy as np
@@ -6,12 +7,14 @@ import pandas as pd
 
 
 def reorderCsvColumns():
-    csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_dataframe_to_csv_export.csv"
-    reorderedCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/reordered_Netflix_dataframe_to_csv_export.csv"
+    # csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_dataframe_to_csv_export.csv"
+    csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
+    reorderedCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/removedHeader_Netflix_dataframe_to_csv_export.csv"
 
     with open(csvPath, 'r') as infile, open(reorderedCsvPath, 'a') as outfile:
+        reader = csv.DictReader(infile)
         # output dict needs a list for new column ordering
-        fieldnames = ['userId', 'movieId', 'rating']
+        fieldnames = ['user', 'item', 'rating', 'timestamp']
         writer = csv.DictWriter(outfile, fieldnames=fieldnames)
         # reorder the header first
         writer.writeheader()
@@ -20,50 +23,102 @@ def reorderCsvColumns():
             writer.writerow(row)
 
 
-def removeEmptyRowsFromCsv():
-    reorderedCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/reordered_Netflix_dataframe_to_csv_export.csv"
-    blankRowLessCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/no_blank_rows_Netflix_dataframe_to_csv_export.csv"
+def removeHeader():
+    csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
+    removedHeaderCsv = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/removedHeader_Netflix_dataframe_to_csv_export.csv"
 
-    df = pd.read_csv(reorderedCsvPath)
-    df.to_csv(blankRowLessCsvPath, index=False)
+    with open(csvPath, 'r') as infile, open(removedHeaderCsv, 'a') as outfile:
+        next(infile)
+        for line in infile:
+            outfile.write(line)
+
+
+def removeEmptyRowsFromCsvPd():
+    csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings_1.csv"
+    noBlankRowsCsv = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings_1asd.csv"
+    # reorderedCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/reordered_Netflix_dataframe_to_csv_export.csv"
+    # blankRowLessCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/no_blank_rows_Netflix_dataframe_to_csv_export.csv"
+
+    df = pd.read_csv(csvPath)
+    df.to_csv(noBlankRowsCsv, index=False)
+
+# #https://gist.github.com/jrivero/1085501
+def split(filehandler, delimiter=',', row_limit=10000, output_name_template='output_%s.csv', output_path='.', keep_headers=True):
+    """
+    Splits a CSV file into multiple pieces.
+
+    A quick bastardization of the Python CSV library.
+    Arguments:
+        `row_limit`: The number of rows you want in each output file. 10,000 by default.
+        `output_name_template`: A %s-style template for the numbered output files.
+        `output_path`: Where to stick the output files.
+        `keep_headers`: Whether or not to print the headers in each output file.
+    Example usage:
+
+        >> from toolbox import csv_splitter;
+        >> csv_splitter.split(open('/home/ben/input.csv', 'r'));
+
+    """
+    import csv
+    reader = csv.reader(filehandler, delimiter=delimiter)
+    current_piece = 1
+    current_out_path = os.path.join(
+        output_path,
+        output_name_template % current_piece
+    )
+    current_out_writer = csv.writer(open(current_out_path, 'w'), delimiter=delimiter)
+    current_limit = row_limit
+    if keep_headers:
+        headers = reader.next()
+        current_out_writer.writerow(headers)
+    for i, row in enumerate(reader):
+        if i + 1 > current_limit:
+            current_piece += 1
+            current_limit = row_limit * current_piece
+            current_out_path = os.path.join(
+                output_path,
+                output_name_template % current_piece
+            )
+            current_out_writer = csv.writer(open(current_out_path, 'w'), delimiter=delimiter)
+            if keep_headers:
+                current_out_writer.writerow(headers)
+        current_out_writer.writerow(row)
+
+def removeEmptyRows():
+    csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
+    noBlankRowsCsv = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/noBlankRows_Netflix_dataframe_to_csv_export.csv"
+
+    reader = csv.DictReader(open(csvPath))
+    writer = csv.DictWriter(open(noBlankRowsCsv, 'w'), fieldnames=reader.fieldnames)
+
+    for row in reader:
+        if all(col != '' for col in row.values()):
+            continue
+
+        writer.writerow(row)
+
+
+def readFromCsv(csvPath):
+    return pd.read_csv(csvPath, header=None, names=['user', 'rating', 'timestamp'], usecols=[0, 1, 2])
 
 
 def makeNetflixDatasetUsable():
     start = time.time()
+
     print("Reading combined_data_1")
-    # Reading combined_data_1
-    # Relative path doesn't work for some reason
-    df1 = pd.read_csv(
-        'D:/Other/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Netflix/combined_data_1.txt',
-        header=None,
-        names=['user', 'rating', 'timestamp'], usecols=[0, 1, 2])
+    df1 = readFromCsv('D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_1.txt')
     df1['rating'] = df1['rating'].astype(float)
 
     print("Reading combined_data_2")
-    # Reading combined_data_2
-    # Relative path doesn't work for some reason
-    df2 = pd.read_csv(
-        'D:/Other/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Netflix/combined_data_2.txt',
-        header=None,
-        names=['user', 'rating', 'timestamp'], usecols=[0, 1, 2])
+    df2 = readFromCsv('D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_2.txt')
     df2['rating'] = df2['rating'].astype(float)
 
     print("Reading combined_data_3")
-    # # Reading combined_data_3
-    # # Relative path doesn't work for some reason
-    df3 = pd.read_csv(
-        'D:/Other/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Netflix/combined_data_3.txt',
-        header=None,
-        names=['user', 'rating', 'timestamp'], usecols=[0, 1, 2])
+    df3 = readFromCsv('D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_3.txt')
     df3['rating'] = df3['rating'].astype(float)
 
     print("Reading combined_data_4")
-    # # Reading combined_data_4
-    # # Relative path doesn't work for some reason
-    df4 = pd.read_csv(
-        'D:/Other/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Netflix/combined_data_4.txt',
-        header=None,
-        names=['user', 'rating', 'timestamp'], usecols=[0, 1, 2])
+    df4 = readFromCsv('D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_4.txt')
     df4['rating'] = df4['rating'].astype(float)
 
     print("Reading the data took: {}".format(time.time() - start))

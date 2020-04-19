@@ -2,6 +2,7 @@ import heapq
 import math
 
 import numpy as np
+from diplomamunka.main.dao.DatasetType import DatasetType
 from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
 from surprise import AlgoBase, PredictionImpossible
 
@@ -41,6 +42,16 @@ class ContentBased(AlgoBase):
     def fit(self, trainset):
         AlgoBase.fit(self, trainset)
 
+        if self.datasetAccessor.getDataset().getDatasetType() == DatasetType.MOVIELENS_100K or self.datasetAccessor.getDataset().getDatasetType() == DatasetType.MOVIELENS_1m:
+            self.fitForMovieLens()
+        elif self.datasetAccessor.getDataset().getDatasetType() == DatasetType.NETFLIX_PRIZE_DATASET:
+            self.fitForNetflix()
+
+        print("...done.")
+
+        return self
+
+    def fitForMovieLens(self):
         # Compute item similarity matrix based on content attributes
         # Load up genre vectors for every movie
         genres = self.datasetAccessor.getGenres()
@@ -57,14 +68,32 @@ class ContentBased(AlgoBase):
             for otherRating in range(thisRating + 1, self.trainset.n_items):
                 thisMovieID = int(self.trainset.to_raw_iid(thisRating))
                 otherMovieID = int(self.trainset.to_raw_iid(otherRating))
+
                 genreSimilarity = computeGenreSimilarity(thisMovieID, otherMovieID, genres)
                 yearSimilarity = computeYearSimilarity(thisMovieID, otherMovieID, years)
                 self.similarities[thisRating, otherRating] = genreSimilarity * yearSimilarity
                 self.similarities[otherRating, thisRating] = self.similarities[thisRating, otherRating]
 
-        print("...done.")
+    def fitForNetflix(self):
+        # Compute item similarity matrix based on content attributes
+        # Load up genre vectors for every movie
 
-        return self
+        years = self.datasetAccessor.getYears()
+
+        print("Computing content-based similarity matrix...")
+
+        # Compute genre distance for every movie combination as a 2x2 matrix
+        self.similarities = np.zeros((self.trainset.n_items, self.trainset.n_items))
+
+        for thisRating in range(self.trainset.n_items):
+            if thisRating % 100 == 0:
+                print(thisRating, " of ", self.trainset.n_items)
+            for otherRating in range(thisRating + 1, self.trainset.n_items):
+                thisMovieID = int(self.trainset.to_raw_iid(thisRating))
+                otherMovieID = int(self.trainset.to_raw_iid(otherRating))
+
+                yearSimilarity = computeYearSimilarity(thisMovieID, otherMovieID, years)
+                self.similarities[otherRating, thisRating] = yearSimilarity
 
     def estimate(self, u, i):
 

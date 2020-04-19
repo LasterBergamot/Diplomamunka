@@ -87,7 +87,6 @@ class RecommenderService:
         self.datasetAccessor = DatasetAccessor()
         self.investigator = Investigator()
         self.recommender = Recommender()
-        self.metrics = Metrics()
 
     def start(self):
         # create a set of datasets - they have to be unique

@@ -23,11 +23,10 @@ class Dataset:
         print("Loading dataset: [{}]...DONE!".format(datasetType.value))
 
     def loadNetflixDataset(self):
-        # netflixCSVPath = r"D:\Egyetem\Msc\Diplomamunka\Netflix_Prize_Dataset\Netflix_dataframe_to_csv_export.csv"
-        netflixCSVPath = r"D:\Netflix_dataframe_to_csv_export.csv"
-        reader = Reader(line_format="user rating timestamp item", sep=",")
+        netflixCSVPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings_1asd.csv"
+        reader = Reader(line_format="user item rating timestamp", rating_scale=(1, 5), sep=",", skip_lines=2)
 
-        return surpriseDataset.load_from_file(netflixCSVPath, reader)
+        return surpriseDataset.load_from_file(netflixCSVPath, reader=reader)
 
     # create train and validation sets here from the dataset
     def processChosenDataset(self, testSetSize):

@@ -54,10 +54,10 @@ class DatasetAccessor:
     def getPopularityRankings(self):
         popularityRankings = None
 
-        if self.dataset.getDatasetType() == DatasetType.MOVIELENS_1m or self.dataset.getDatasetType() == DatasetType.MOVIELENS_100K:
-            popularityRankings = self.createPopularityRanks()
-        elif self.dataset.getDatasetType() == DatasetType.JESTER:
+        if self.dataset.getDatasetType() == DatasetType.JESTER:
             popularityRankings = createPopularityRankingsForJester()
+        else:
+            popularityRankings = self.createPopularityRanks()
 
         return popularityRankings
 
@@ -68,6 +68,10 @@ class DatasetAccessor:
         with open(self.getCsvPathForRatings(), newline='') as csvfile:
             ratingReader = csv.reader(csvfile)
             next(ratingReader)
+
+            if self.dataset.getDatasetType() == DatasetType.NETFLIX_PRIZE_DATASET:
+                next(ratingReader)
+
             for row in ratingReader:
                 movieID = int(row[1])
                 ratings[movieID] += 1
@@ -81,7 +85,14 @@ class DatasetAccessor:
         return pd.read_csv(self.getCsvPathForRatings(), header=None, names=['movieId', 'title', 'genres'], usecols=[0, 1, 2])
 
     def getCsvPathForRatings(self):
-        return ML_100K_RATINGS_CSV if self.dataset.getDatasetType() == DatasetType.MOVIELENS_100K else ML_1M_RATINGS_CSV
+        csvPath = ML_100K_RATINGS_CSV
+
+        if self.dataset.getDatasetType() == DatasetType.MOVIELENS_1m:
+            csvPath = ML_1M_RATINGS_CSV
+        elif self.dataset.getDatasetType() == DatasetType.NETFLIX_PRIZE_DATASET:
+            csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
+
+        return csvPath
 
     def getYears(self):
         p = re.compile(r"(?:\((\d{4})\))?\s*$")
@@ -91,7 +102,7 @@ class DatasetAccessor:
             next(movieReader)
             for row in movieReader:
                 movieID = int(row[0])
-                title = row[1]
+                title = row[1] if self.dataset.getDatasetName() == DatasetType.MOVIELENS_100K.value or self.dataset.getDatasetName() == DatasetType.MOVIELENS_1m.value else row[2]
                 m = p.search(title)
                 year = m.group(1)
                 if year:
@@ -128,7 +139,14 @@ class DatasetAccessor:
         return genres
 
     def getCsvPathForMovies(self):
-        return ML_100K_MOVIES_CSV if self.dataset.getDatasetType() == DatasetType.MOVIELENS_100K else ML_1M_MOVIES_CSV
+        csvPath = ML_100K_MOVIES_CSV
+
+        if self.dataset.getDatasetType() == DatasetType.MOVIELENS_1m:
+            csvPath = ML_1M_MOVIES_CSV
+        elif self.dataset.getDatasetType() == DatasetType.NETFLIX_PRIZE_DATASET:
+            csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/movie_titles.csv"
+
+        return csvPath
 
     def loadMovieIDsAndNames(self):
         with open(self.getCsvPathForMovies(), newline='', encoding='ISO-8859-1') as csvfile:
