@@ -47,6 +47,7 @@ JESTER_NUMBER_OF_RATINGS = 1761439
 JESTER_SIZE_OF_MATRIX = JESTER_NUMBER_OF_USERS * JESTER_NUMBER_OF_ITEMS
 JESTER_RATIO = JESTER_NUMBER_OF_RATINGS / JESTER_SIZE_OF_MATRIX
 
+# memory issues with the whole dataset
 # Netflix Prize Data: https://www.kaggle.com/netflix-inc/netflix-prize-data
 # users: 480189
 # items (movies): 17770

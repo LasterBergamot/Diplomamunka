@@ -16,13 +16,15 @@ class Hybrid(AlgoBase):
     def fit(self, trainset):
         AlgoBase.fit(self, trainset)
 
+        print("Fitting with Hybrid algorithm...START!")
         for algorithm in self.algorithms:
             algorithm.fit(trainset)
+
+        print("Fitting with Hybrid algorithm...END!")
 
         return self
 
     def estimate(self, u, i):
-
         sumScores = 0
         sumWeights = 0
 

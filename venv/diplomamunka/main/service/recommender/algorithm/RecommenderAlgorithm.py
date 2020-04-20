@@ -19,18 +19,27 @@ class RecommenderAlgorithm:
 
         # do some stuff here
         # fit - Here the model learns from the trainSet
+        print("Fitting...START!")
         self.algorithm.fit(trainSet)
+        print("Fitting ...END!")
+
         # test - Here the model tries to make predictions from a testSet,
         # depending on the knowledge it gathered while learning from the trainSet
         # Required for MAE, RMSE and topNPredicted
+        print("Testing...START!")
         predictions = self.algorithm.test(testSet)
+        print("Testing...END!")
 
         # Required for Coverage, Diversity and Novelty
+        print("Calculating top-N predictions...START!")
         topNPredicted = calculateTopN(predictions)
+        print("Calculating top-N predictions...END!")
 
         # Required for Diversity
+        print("Calculating similarity matrix...START!")
         similarityMatrix = KNNBaseline(sim_options={'name': 'cosine', 'user_based': False})
         similarityMatrix.fit(trainSet)
+        print("Calculating similarity matrix...END!")
 
         metrics.calculateMetrics(predictions, topNPredicted, trainSet.n_users, similarityMatrix, popularityRankings, ratingThreshold=4)
 

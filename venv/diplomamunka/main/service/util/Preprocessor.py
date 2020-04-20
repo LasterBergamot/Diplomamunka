@@ -7,12 +7,10 @@ import pandas as pd
 
 
 def reorderCsvColumns():
-    # csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_dataframe_to_csv_export.csv"
     csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
     reorderedCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/removedHeader_Netflix_dataframe_to_csv_export.csv"
 
     with open(csvPath, 'r') as infile, open(reorderedCsvPath, 'a') as outfile:
-        reader = csv.DictReader(infile)
         # output dict needs a list for new column ordering
         fieldnames = ['user', 'item', 'rating', 'timestamp']
         writer = csv.DictWriter(outfile, fieldnames=fieldnames)
@@ -36,13 +34,11 @@ def removeHeader():
 def removeEmptyRowsFromCsvPd():
     csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings_1.csv"
     noBlankRowsCsv = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings_1asd.csv"
-    # reorderedCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/reordered_Netflix_dataframe_to_csv_export.csv"
-    # blankRowLessCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/no_blank_rows_Netflix_dataframe_to_csv_export.csv"
 
     df = pd.read_csv(csvPath)
     df.to_csv(noBlankRowsCsv, index=False)
 
-# #https://gist.github.com/jrivero/1085501
+# source: https://gist.github.com/jrivero/1085501
 def split(filehandler, delimiter=',', row_limit=10000, output_name_template='output_%s.csv', output_path='.', keep_headers=True):
     """
     Splits a CSV file into multiple pieces.

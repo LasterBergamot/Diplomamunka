@@ -105,6 +105,7 @@ class Metrics:
         self.scalability = runTimeOfAlgorithm
 
     def calculateMetrics(self, predictions, topNPredicted, numberOfUsers, similarityMatrix, popularityRankings, ratingThreshold=0):
+        print("Calculating metrics...START!")
         self.MAE(predictions)
         self.RMSE(predictions)
         self.Coverage(topNPredicted, numberOfUsers, ratingThreshold)
@@ -112,6 +113,8 @@ class Metrics:
 
         if popularityRankings is not None:
             self.Novelty(topNPredicted, popularityRankings)
+
+        print("Calculating metrics...END!")
 
     def getMAE(self):
         return self.mae

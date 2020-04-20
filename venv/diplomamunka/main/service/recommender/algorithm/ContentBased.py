@@ -34,7 +34,7 @@ class ContentBased(AlgoBase):
 
     algorithmType = AlgorithmType.CONTENT_BASED
 
-    def __init__(self, datasetAccessor, k=40, sim_options={}):
+    def __init__(self, datasetAccessor, k=40):
         AlgoBase.__init__(self)
         self.k = k
         self.datasetAccessor = datasetAccessor
@@ -47,17 +47,16 @@ class ContentBased(AlgoBase):
         elif self.datasetAccessor.getDataset().getDatasetType() == DatasetType.NETFLIX_PRIZE_DATASET:
             self.fitForNetflix()
 
-        print("...done.")
-
         return self
 
     def fitForMovieLens(self):
+        datasetName = self.datasetAccessor.getDataset().getDatasetType().value
+
         # Compute item similarity matrix based on content attributes
-        # Load up genre vectors for every movie
         genres = self.datasetAccessor.getGenres()
         years = self.datasetAccessor.getYears()
 
-        print("Computing content-based similarity matrix...")
+        print("Computing content-based similarity matrix for {}...START!".format(datasetName))
 
         # Compute genre distance for every movie combination as a 2x2 matrix
         self.similarities = np.zeros((self.trainset.n_items, self.trainset.n_items))
@@ -74,15 +73,13 @@ class ContentBased(AlgoBase):
                 self.similarities[thisRating, otherRating] = genreSimilarity * yearSimilarity
                 self.similarities[otherRating, thisRating] = self.similarities[thisRating, otherRating]
 
-    def fitForNetflix(self):
-        # Compute item similarity matrix based on content attributes
-        # Load up genre vectors for every movie
+        print("Computing content-based similarity matrix for {}...END!".format(datasetName))
 
+    def fitForNetflix(self):
         years = self.datasetAccessor.getYears()
 
-        print("Computing content-based similarity matrix...")
+        print("Computing content-based similarity matrix for Netflix...START!")
 
-        # Compute genre distance for every movie combination as a 2x2 matrix
         self.similarities = np.zeros((self.trainset.n_items, self.trainset.n_items))
 
         for thisRating in range(self.trainset.n_items):
@@ -95,8 +92,9 @@ class ContentBased(AlgoBase):
                 yearSimilarity = computeYearSimilarity(thisMovieID, otherMovieID, years)
                 self.similarities[otherRating, thisRating] = yearSimilarity
 
-    def estimate(self, u, i):
+        print("Computing content-based similarity matrix for Netflix...END!")
 
+    def estimate(self, u, i):
         if not (self.trainset.knows_user(u) and self.trainset.knows_item(i)):
             raise PredictionImpossible('User and/or item is unkown.')
 

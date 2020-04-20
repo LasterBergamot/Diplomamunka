@@ -6,6 +6,10 @@ import pandas as pd
 from diplomamunka.main.dao.Dataset import Dataset
 from diplomamunka.main.dao.DatasetType import DatasetType
 
+NETFLIX_RATINGS_CSV = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
+
+NETFLIX_MOVIES_CSV = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/movie_titles.csv"
+
 ML_1M_MOVIES_CSV = 'D:/Other/Hobby/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Datasets/MovieLens/1m/csv/movies_1m.csv'
 ML_1M_RATINGS_CSV = 'D:/Other/Hobby/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Datasets/MovieLens/1m/csv/ratings_1m.csv'
 
@@ -90,7 +94,7 @@ class DatasetAccessor:
         if self.dataset.getDatasetType() == DatasetType.MOVIELENS_1m:
             csvPath = ML_1M_RATINGS_CSV
         elif self.dataset.getDatasetType() == DatasetType.NETFLIX_PRIZE_DATASET:
-            csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
+            csvPath = NETFLIX_RATINGS_CSV
 
         return csvPath
 
@@ -144,7 +148,7 @@ class DatasetAccessor:
         if self.dataset.getDatasetType() == DatasetType.MOVIELENS_1m:
             csvPath = ML_1M_MOVIES_CSV
         elif self.dataset.getDatasetType() == DatasetType.NETFLIX_PRIZE_DATASET:
-            csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/movie_titles.csv"
+            csvPath = NETFLIX_MOVIES_CSV
 
         return csvPath
 

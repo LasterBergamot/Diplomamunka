@@ -76,6 +76,7 @@ def getMetricsListFromNumpyArray(numpyArray):
 
     return plotterMetricsList
 
+
 def plot():
     xlsxPath = "D:/Egyetem/Msc/Diplomamunka/Metrics_for_algorithms.xlsx"
     csvPath = "D:/Egyetem/Msc/Diplomamunka/Metrics_for_algorithms_allInOne.csv"
@@ -108,6 +109,7 @@ def plot():
     plotMetrics(algNameList, diversityList, "Különbözőségi értékek: a nagyobb jobb", "Különbözőségi értékek minden adathalmaz esetén")
     plotMetrics(algNameList, noveltyList, "Újszerűségi értékek: a nagyobb jobb", "Újszerűségi értékek minden adathalmaz esetén")
     plotMetrics(algNameList, scalabilityList, "Futási idők: a kisebb jobb", "Futási idők minden adathalmaz esetén")
+
 
 class Plotter:
     pass
