@@ -20,6 +20,7 @@ QUIT_LONG = "quit"
 QUIT_SHORT = "q"
 
 def createPopularityRankingsForJester():
+    print("Calculating popularity rankings for Jester...START!")
     ratings = defaultdict(int)
     rankings = defaultdict(int)
     jesterCsvPath = 'D:/Other/Hobby/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Datasets/Jester/jester_ratings.csv'
@@ -37,6 +38,7 @@ def createPopularityRankingsForJester():
         rankings[jokeID] = rank
         rank += 1
 
+    print("Calculating popularity rankings for Jester...END!")
     return rankings
 
 
@@ -66,8 +68,10 @@ class DatasetAccessor:
         return popularityRankings
 
     def createPopularityRanks(self):
+        print("Calculating popularity rankings...START!")
         ratings = defaultdict(int)
         rankings = defaultdict(int)
+        rank = 1
 
         with open(self.getCsvPathForRatings(), newline='') as csvfile:
             ratingReader = csv.reader(csvfile)
@@ -79,10 +83,12 @@ class DatasetAccessor:
             for row in ratingReader:
                 movieID = int(row[1])
                 ratings[movieID] += 1
-        rank = 1
+
         for movieID, ratingCount in sorted(ratings.items(), key=lambda x: x[1], reverse=True):
             rankings[movieID] = rank
             rank += 1
+
+        print("Calculating popularity rankings...END!")
         return rankings
 
     def loadRatings(self):

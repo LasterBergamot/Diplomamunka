@@ -1,5 +1,6 @@
 import time
 
+from diplomamunka.main.dao.DatasetType import DatasetType
 from diplomamunka.main.service.util.Metrics import Metrics, calculateTopN
 from surprise import KNNBaseline
 
@@ -15,6 +16,7 @@ class RecommenderAlgorithm:
     def evaluate(self, trainSet, testSet, popularityRankings):
         print("\nEvaluating dataset [{}] using algorithm [{}]...START!\n".format(self.datasetName, self.name))
         metrics = Metrics(self.name, self.datasetName)
+        ratingThreshold = 4
         startTime = time.time()
 
         # do some stuff here
@@ -41,7 +43,10 @@ class RecommenderAlgorithm:
         similarityMatrix.fit(trainSet)
         print("Calculating similarity matrix...END!")
 
-        metrics.calculateMetrics(predictions, topNPredicted, trainSet.n_users, similarityMatrix, popularityRankings, ratingThreshold=4)
+        if self.datasetName == DatasetType.JESTER.value:
+            ratingThreshold = 8
+
+        metrics.calculateMetrics(predictions, topNPredicted, trainSet.n_users, similarityMatrix, popularityRankings, ratingThreshold=ratingThreshold)
 
         endTime = time.time()
 
