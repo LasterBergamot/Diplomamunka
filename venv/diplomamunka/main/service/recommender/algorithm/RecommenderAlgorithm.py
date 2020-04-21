@@ -16,7 +16,7 @@ class RecommenderAlgorithm:
     def evaluate(self, trainSet, testSet, popularityRankings):
         print("\nEvaluating dataset [{}] using algorithm [{}]...START!\n".format(self.datasetName, self.name))
         metrics = Metrics(self.name, self.datasetName)
-        ratingThreshold = 4
+        ratingThreshold = 8 if self.datasetName == DatasetType.JESTER.value else 4
         startTime = time.time()
 
         # do some stuff here
@@ -34,7 +34,7 @@ class RecommenderAlgorithm:
 
         # Required for Coverage, Diversity and Novelty
         print("Calculating top-N predictions...START!")
-        topNPredicted = calculateTopN(predictions)
+        topNPredicted = calculateTopN(predictions, minimumRating=ratingThreshold)
         print("Calculating top-N predictions...END!")
 
         # Required for Diversity
@@ -42,9 +42,6 @@ class RecommenderAlgorithm:
         similarityMatrix = KNNBaseline(sim_options={'name': 'cosine', 'user_based': False})
         similarityMatrix.fit(trainSet)
         print("Calculating similarity matrix...END!")
-
-        if self.datasetName == DatasetType.JESTER.value:
-            ratingThreshold = 8
 
         metrics.calculateMetrics(predictions, topNPredicted, trainSet.n_users, similarityMatrix, popularityRankings, ratingThreshold=ratingThreshold)
 

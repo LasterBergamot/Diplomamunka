@@ -7,9 +7,9 @@ from surprise import accuracy
 def calculateTopN(predictions, n=10, minimumRating=4.0):
     topN = defaultdict(list)
 
-    for userID, movieID, actualRating, estimatedRating, _ in predictions:
+    for userID, itemID, actualRating, estimatedRating, _ in predictions:
         if estimatedRating >= minimumRating:
-            topN[int(userID)].append((int(movieID), estimatedRating))
+            topN[int(userID)].append((int(itemID), estimatedRating))
 
     for userID, ratings in topN.items():
         ratings.sort(key=lambda x: x[1], reverse=True)
@@ -48,7 +48,7 @@ class Metrics:
         hits = 0
         for userID in topNPredicted.keys():
             hit = False
-            for movieID, predictedRating in topNPredicted[userID]:
+            for itemID, predictedRating in topNPredicted[userID]:
                 if predictedRating >= ratingThreshold:
                     hit = True
                     break
@@ -67,17 +67,17 @@ class Metrics:
         for userID in topNPredicted.keys():
             pairs = itertools.combinations(topNPredicted[userID], 2)
             for pair in pairs:
-                movie1 = pair[0][0]
-                movie2 = pair[1][0]
+                item1 = pair[0][0]
+                item2 = pair[1][0]
 
                 # need to skip this id, unless to_inner_iid() would throw an exception
                 # because there's only one movie with this id
                 # so, this one would be in either the train set or the test set, but not in both
-                if movie1 == 3280 or movie2 == 3280:
+                if item1 == 3280 or item2 == 3280:
                     continue
 
-                innerID1 = similarityMatrix.trainset.to_inner_iid(str(movie1))
-                innerID2 = similarityMatrix.trainset.to_inner_iid(str(movie2))
+                innerID1 = similarityMatrix.trainset.to_inner_iid(str(item1))
+                innerID2 = similarityMatrix.trainset.to_inner_iid(str(item2))
                 similarity = simsMatrix[innerID1][innerID2]
                 total += similarity
                 n += 1
@@ -97,6 +97,7 @@ class Metrics:
                 rank = popularityRankings[movieID]
                 total += rank
                 n += 1
+
         self.novelty = total / n
         print("Calculating Novelty...DONE!")
 

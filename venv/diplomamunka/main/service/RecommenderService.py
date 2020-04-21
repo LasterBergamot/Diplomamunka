@@ -149,15 +149,31 @@ class RecommenderService:
 
         algorithms = [
             RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF - Pearson", ""),
-            # RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': True})), "KNNBasic: User-based CF - Pearson", ""),
+            RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': True})), "KNNBasic: User-based CF - Pearson", ""),
             RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithMeans: Item-based CF - Pearson", ""),
-            # RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithMeans: User-based CF - Pearson", ""),
+            RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithMeans: User-based CF - Pearson", ""),
             RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': False})), "KNNBaseline: Item-based CF - Pearson", ""),
-            # RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': True})), "KNNBaseline: User-based CF - Pearson", ""),
+            RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': True})), "KNNBaseline: User-based CF - Pearson", ""),
             RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithZScore: Item-based CF - Pearson", ""),
-            # RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithZScore: User-based CF - Pearson", ""),
+            RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithZScore: User-based CF - Pearson", ""),
+        ]
+
+        algorithmsForJesterAndNetflix = [
+            RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF - Pearson", ""),
+            RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithMeans: Item-based CF - Pearson", ""),
+            RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': False})), "KNNBaseline: Item-based CF - Pearson", ""),
+            RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithZScore: Item-based CF - Pearson", ""),
             RecommenderAlgorithm(SVD(), "SVD", "")
         ]
+
+        # for datasetAccessor in datasetAccessors:
+        #     datasetName = datasetAccessor.getDataset().getDatasetType().value
+        #
+        #     for algorithm in algorithmsForJesterAndNetflix:
+        #         recommenderAlgorithm = algorithm
+        #         recommenderAlgorithm.setDatasetName(datasetName)
+        #
+        #         self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
 
         for datasetAccessor in datasetAccessors:
             datasetName = datasetAccessor.getDataset().getDatasetType().value
@@ -167,6 +183,22 @@ class RecommenderService:
                 recommenderAlgorithm.setDatasetName(datasetName)
 
                 self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
+
+        # for datasetAccessor in datasetAccessors:
+        #     datasetName = datasetAccessor.getDataset().getDatasetType().value
+        #
+        #     if datasetName == DatasetType.JESTER.value or datasetName == DatasetType.NETFLIX_PRIZE_DATASET.value:
+        #         for algorithm in algorithmsForJesterAndNetflix:
+        #             recommenderAlgorithm = algorithm
+        #             recommenderAlgorithm.setDatasetName(datasetName)
+        #
+        #             self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
+        #     else:
+        #         for algorithm in algorithms:
+        #             recommenderAlgorithm = algorithm
+        #             recommenderAlgorithm.setDatasetName(datasetName)
+        #
+        #             self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
 
         print("Selected algorithms with datasets:")
         algorithmsAndAccessors = self.recommender.getAlgorithmsAndAccessors()
