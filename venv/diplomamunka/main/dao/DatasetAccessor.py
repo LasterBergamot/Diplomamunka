@@ -6,6 +6,8 @@ import pandas as pd
 from diplomamunka.main.dao.Dataset import Dataset
 from diplomamunka.main.dao.DatasetType import DatasetType
 
+JESTER_RATINGS_CSV = 'D:/Other/Hobby/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Datasets/Jester/jester_ratings.csv'
+
 NETFLIX_RATINGS_CSV = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
 
 NETFLIX_MOVIES_CSV = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/movie_titles.csv"
@@ -23,10 +25,9 @@ def createPopularityRankingsForJester():
     print("Calculating popularity rankings for Jester...START!")
     ratings = defaultdict(int)
     rankings = defaultdict(int)
-    jesterCsvPath = 'D:/Other/Hobby/Programming/Workspaces/PyCharm_Workspace/Diplomamunka/venv/Datasets/Jester/jester_ratings.csv'
     rank = 1
 
-    with open(jesterCsvPath, newline='') as csvfile:
+    with open(JESTER_RATINGS_CSV, newline='') as csvfile:
         ratingReader = csv.reader(csvfile)
         next(ratingReader)
         for row in ratingReader:
@@ -43,8 +44,6 @@ def createPopularityRankingsForJester():
 
 
 class DatasetAccessor:
-    movieID_to_name = {}
-    name_to_movieID = {}
 
     def __init__(self):
         self.dataset = Dataset()
@@ -58,14 +57,7 @@ class DatasetAccessor:
 
     # Only in the case of MovieLens dataset
     def getPopularityRankings(self):
-        popularityRankings = None
-
-        if self.dataset.getDatasetType() == DatasetType.JESTER:
-            popularityRankings = createPopularityRankingsForJester()
-        else:
-            popularityRankings = self.createPopularityRanks()
-
-        return popularityRankings
+        return createPopularityRankingsForJester() if self.dataset.getDatasetType() == DatasetType.JESTER else self.createPopularityRanks()
 
     def createPopularityRanks(self):
         print("Calculating popularity rankings...START!")
@@ -158,16 +150,6 @@ class DatasetAccessor:
 
         return csvPath
 
-    def loadMovieIDsAndNames(self):
-        with open(self.getCsvPathForMovies(), newline='', encoding='ISO-8859-1') as csvfile:
-            movieReader = csv.reader(csvfile)
-            next(movieReader)  # Skip header line
-            for row in movieReader:
-                movieID = int(row[0])
-                movieName = row[1]
-                self.movieID_to_name[movieID] = movieName
-                self.name_to_movieID[movieName] = movieID
-
     def getDataset(self):
         return self.dataset
 
@@ -176,9 +158,3 @@ class DatasetAccessor:
 
     def getTestSet(self):
         return self.dataset.getTestSet()
-
-    def getMovieNameByID(self, movieID):
-        return self.movieID_to_name[movieID] if movieID in self.movieID_to_name else ""
-
-    def getMovieIDByName(self, movieName):
-        return self.name_to_movieID[movieName] if movieName in self.name_to_movieID else ""

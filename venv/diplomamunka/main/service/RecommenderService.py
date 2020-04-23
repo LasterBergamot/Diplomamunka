@@ -7,20 +7,30 @@ from diplomamunka.main.service.recommender.algorithm.AlgorithmAndAccessor import
 from diplomamunka.main.service.recommender.algorithm.CollaborativeFiltering import CollaborativeFiltering
 from diplomamunka.main.service.recommender.algorithm.RecommenderAlgorithm import RecommenderAlgorithm
 from diplomamunka.main.service.util.Investigator import Investigator, investigateChosenDataset
-from diplomamunka.main.service.util.Metrics import Metrics
 from surprise import KNNBasic, KNNWithMeans, KNNBaseline, KNNWithZScore
 from surprise.prediction_algorithms.matrix_factorization import SVD
 
+TESTSET_SIZE = 0.25
+
+CF_ZSCORE_USER_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithZScore: User-based CF - Pearson", "")
+CF_ZSCORE_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithZScore: Item-based CF - Pearson", "")
+CF_BASELINE_USER_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': True})), "KNNBaseline: User-based CF - Pearson", "")
+CF_BASELINE_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': False})), "KNNBaseline: Item-based CF - Pearson", "")
+CF_MEANS_USER_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithMeans: User-based CF - Pearson", "")
+CF_MEANS_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithMeans: Item-based CF - Pearson", "")
+CF_BASIC_USER_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': True})), "KNNBasic: User-based CF - Pearson", "")
+CF_BASIC_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF - Pearson", "")
+SVD = RecommenderAlgorithm(SVD(), "SVD", "")
 
 def addDatasetAccessorToSet(datasetAccessors, datasetType):
     datasetAccessor = DatasetAccessor()
     datasetAccessor.loadDataset(datasetType)
     datasetAccessors.append(datasetAccessor)
 
-def createDatasetAccessorsFromDatasets(choosenDatasets):
+def createDatasetAccessorsFromDatasets(selectedDatasets):
     datasetAccessors = []
 
-    for dataset in choosenDatasets:
+    for dataset in selectedDatasets:
         addDatasetAccessorToSet(datasetAccessors, dataset)
 
     return datasetAccessors
@@ -79,6 +89,15 @@ def showMetrics(metricsFromEvaluation):
     print("Novelty:     Average popularity rank of recommended items. Higher means more novel.")
     print("Scalability: The time required for the algorithm to evaluate the data.")
 
+def printSelectedDatasets(selectedDatasets):
+    print("The selected datasets:")
+    for dataset in selectedDatasets:
+        print(dataset.value)
+
+def createTrainAndTestSetsForTheSelectedDatasets(datasetAccessors, testSetSize):
+    for datasetAccessor in datasetAccessors:
+        datasetAccessor.processChosenDataset(testSetSize)
+
 class RecommenderService:
 
     metricsList: list
@@ -92,36 +111,23 @@ class RecommenderService:
         # create a set of datasets - they have to be unique
         # create a list of dataset accessors
         # be able to choose several datasets at the beginning, so put a for loop here and return a set of datasets
-        choosenDatasets = chooseDatasets()
-        datasetAccessors = createDatasetAccessorsFromDatasets(choosenDatasets)
+        selectedDatasets = chooseDatasets()
+        datasetAccessors = createDatasetAccessorsFromDatasets(selectedDatasets)
         # ends here
 
-        print("The selected datasets:")
-        for dataset in choosenDatasets:
-            print(dataset.value)
+        printSelectedDatasets(selectedDatasets)
 
         # a for loop: loop through all of the dataset accessors
         # create train and test sets
-        for datasetAccessor in datasetAccessors:
-            datasetAccessor.processChosenDataset(0.25)
+        createTrainAndTestSetsForTheSelectedDatasets(datasetAccessors, testSetSize=TESTSET_SIZE)
         # ends here
 
         # for loop: loop through the list/set created above
         # select an algorithm for each through investigation
-        for datasetAccessor in datasetAccessors:
-            recommenderAlgorithm = investigateChosenDataset(datasetAccessor)
-
-            # add algorithm and the dataset accessor as well
-            self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
+        self.addAlgorithmsAndDatasetAccessorsToRecommenderAfterInvestigation(datasetAccessors)
         # ends here
 
-        print("Selected algorithms with datasets:")
-        algorithmsAndAccessors = self.recommender.getAlgorithmsAndAccessors()
-        for algorithmAndAccessor in algorithmsAndAccessors:
-            algorithm = algorithmAndAccessor.getRecommenderAlgorithm()
-            accessor = algorithmAndAccessor.getDatasetAccessor()
-
-            print("Algorithm selected for dataset [{}]: [{}]".format(accessor.getDataset().getDatasetType().value, algorithm.getAlgorithmName()))
+        self.printSelectedAlgorithmsWithDatasets()
 
         # evaluate every alg
         # since the dataset accessor is passed with the alg, no parameters are required
@@ -130,76 +136,7 @@ class RecommenderService:
         # print the metrics for each alg
         showMetrics(metricsFromEvaluation)
 
-    def tester(self):
-        print("Testing...START!")
-        choosenDatasets = chooseDatasets()
-        datasetAccessors = []
-
-        for dataset in choosenDatasets:
-            datasetAccessor = DatasetAccessor()
-            datasetAccessor.loadDataset(dataset)
-            datasetAccessors.append(datasetAccessor)
-
-        print("The selected datasets:")
-        for dataset in choosenDatasets:
-            print(dataset.value)
-
-        for datasetAccessor in datasetAccessors:
-            datasetAccessor.processChosenDataset(0.25)
-
-        algorithms = [
-            RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF - Pearson", ""),
-            RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': True})), "KNNBasic: User-based CF - Pearson", ""),
-            RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithMeans: Item-based CF - Pearson", ""),
-            RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithMeans: User-based CF - Pearson", ""),
-            RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': False})), "KNNBaseline: Item-based CF - Pearson", ""),
-            RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': True})), "KNNBaseline: User-based CF - Pearson", ""),
-            RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithZScore: Item-based CF - Pearson", ""),
-            RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithZScore: User-based CF - Pearson", ""),
-        ]
-
-        algorithmsForJesterAndNetflix = [
-            RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF - Pearson", ""),
-            RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithMeans: Item-based CF - Pearson", ""),
-            RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': False})), "KNNBaseline: Item-based CF - Pearson", ""),
-            RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithZScore: Item-based CF - Pearson", ""),
-            RecommenderAlgorithm(SVD(), "SVD", "")
-        ]
-
-        # for datasetAccessor in datasetAccessors:
-        #     datasetName = datasetAccessor.getDataset().getDatasetType().value
-        #
-        #     for algorithm in algorithmsForJesterAndNetflix:
-        #         recommenderAlgorithm = algorithm
-        #         recommenderAlgorithm.setDatasetName(datasetName)
-        #
-        #         self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
-
-        for datasetAccessor in datasetAccessors:
-            datasetName = datasetAccessor.getDataset().getDatasetType().value
-
-            for algorithm in algorithms:
-                recommenderAlgorithm = algorithm
-                recommenderAlgorithm.setDatasetName(datasetName)
-
-                self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
-
-        # for datasetAccessor in datasetAccessors:
-        #     datasetName = datasetAccessor.getDataset().getDatasetType().value
-        #
-        #     if datasetName == DatasetType.JESTER.value or datasetName == DatasetType.NETFLIX_PRIZE_DATASET.value:
-        #         for algorithm in algorithmsForJesterAndNetflix:
-        #             recommenderAlgorithm = algorithm
-        #             recommenderAlgorithm.setDatasetName(datasetName)
-        #
-        #             self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
-        #     else:
-        #         for algorithm in algorithms:
-        #             recommenderAlgorithm = algorithm
-        #             recommenderAlgorithm.setDatasetName(datasetName)
-        #
-        #             self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
-
+    def printSelectedAlgorithmsWithDatasets(self):
         print("Selected algorithms with datasets:")
         algorithmsAndAccessors = self.recommender.getAlgorithmsAndAccessors()
         for algorithmAndAccessor in algorithmsAndAccessors:
@@ -208,8 +145,42 @@ class RecommenderService:
 
             print("Algorithm selected for dataset [{}]: [{}]".format(accessor.getDataset().getDatasetType().value, algorithm.getAlgorithmName()))
 
+    def addAlgorithmsAndDatasetAccessorsToRecommenderAfterInvestigation(self, datasetAccessors):
+        for datasetAccessor in datasetAccessors:
+            recommenderAlgorithm = investigateChosenDataset(datasetAccessor)
+
+            # add algorithm and the dataset accessor as well
+            self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))
+
+    def tester(self):
+        print("Testing...START!")
+        selectedDatasets = chooseDatasets()
+        datasetAccessors = createDatasetAccessorsFromDatasets(selectedDatasets)
+
+        printSelectedDatasets(selectedDatasets)
+
+        createTrainAndTestSetsForTheSelectedDatasets(datasetAccessors, TESTSET_SIZE)
+
+        # algorithmsForJesterAndNetflix = [CF_BASIC_ITEM_PEARSON, CF_MEANS_ITEM_PEARSON, CF_BASELINE_ITEM_PEARSON, CF_ZSCORE_ITEM_PEARSON, SVD]
+        # self.testerAddDatasetAccessorAndAlgorithmToRecommender(datasetAccessors, algorithmsForJesterAndNetflix)
+
+        algorithms = [CF_BASIC_ITEM_PEARSON, CF_BASIC_USER_PEARSON, CF_MEANS_ITEM_PEARSON, CF_MEANS_USER_PEARSON, CF_BASELINE_ITEM_PEARSON, CF_BASELINE_USER_PEARSON, CF_ZSCORE_ITEM_PEARSON, CF_ZSCORE_USER_PEARSON]
+        self.testerAddDatasetAccessorAndAlgorithmToRecommender(datasetAccessors, algorithms)
+
+        self.printSelectedAlgorithmsWithDatasets()
+
         metricsFromEvaluation = self.recommender.evaluate()
 
         showMetrics(metricsFromEvaluation)
 
         print("Testing...DONE!")
+
+    def testerAddDatasetAccessorAndAlgorithmToRecommender(self, datasetAccessors, algorithms):
+        for datasetAccessor in datasetAccessors:
+            datasetName = datasetAccessor.getDataset().getDatasetType().value
+
+            for algorithm in algorithms:
+                recommenderAlgorithm = algorithm
+                recommenderAlgorithm.setDatasetName(datasetName)
+
+                self.recommender.addAlgorithmAndAccessor(AlgorithmAndAccessor(recommenderAlgorithm, datasetAccessor))

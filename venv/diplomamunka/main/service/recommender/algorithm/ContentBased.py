@@ -6,6 +6,7 @@ from diplomamunka.main.dao.DatasetType import DatasetType
 from diplomamunka.main.service.recommender.algorithm.AlgorithmType import AlgorithmType
 from surprise import AlgoBase, PredictionImpossible
 
+# based on the cosine similarity where the coordinates are the genres given by the movies
 def computeGenreSimilarity(movie1, movie2, genres):
     genres1 = genres[movie1]
     genres2 = genres[movie2]
@@ -25,6 +26,9 @@ def computeGenreSimilarity(movie1, movie2, genres):
 
     return similarity
 
+# based on the year difference of the given movies
+# if the difference is at least 10 years, the similarity will be close to 0
+# if the difference is close to 0, the similarity will be close to 1
 def computeYearSimilarity(movie1, movie2, years):
     diff = abs(years[movie1] - years[movie2])
     sim = math.exp(-diff / 10.0)

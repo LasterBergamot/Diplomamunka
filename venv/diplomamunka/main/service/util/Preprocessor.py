@@ -5,7 +5,6 @@ import time
 import numpy as np
 import pandas as pd
 
-
 def reorderCsvColumns():
     csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
     reorderedCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/removedHeader_Netflix_dataframe_to_csv_export.csv"

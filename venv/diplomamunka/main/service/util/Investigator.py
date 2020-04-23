@@ -48,9 +48,9 @@ def getRecommenderAlgorithm(datasetNumberOfRatings, datasetRatio, datasetAccesso
 
         # memory issues
         if datasetType == DatasetType.NETFLIX_PRIZE_DATASET:
-            knnItemPearson = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False}))
+            knnItemCosine = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'cosine', 'user_based': False}))
 
-            recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnItemPearson], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: Item-based KNNWithMeans", datasetName)
+            recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnItemCosine], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: Item-based KNNWithMeans", datasetName)
         else:
             knnUserPearson = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True}))
 
