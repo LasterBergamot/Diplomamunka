@@ -7,20 +7,12 @@ from diplomamunka.main.service.recommender.algorithm.AlgorithmAndAccessor import
 from diplomamunka.main.service.recommender.algorithm.CollaborativeFiltering import CollaborativeFiltering
 from diplomamunka.main.service.recommender.algorithm.RecommenderAlgorithm import RecommenderAlgorithm
 from diplomamunka.main.service.util.Investigator import Investigator, investigateChosenDataset
-from surprise import KNNBasic, KNNWithMeans, KNNBaseline, KNNWithZScore
-from surprise.prediction_algorithms.matrix_factorization import SVD
+from surprise import KNNBasic, KNNWithMeans
 
 TESTSET_SIZE = 0.25
 
-CF_ZSCORE_USER_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithZScore: User-based CF - Pearson", "")
-CF_ZSCORE_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNWithZScore(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithZScore: Item-based CF - Pearson", "")
-CF_BASELINE_USER_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': True})), "KNNBaseline: User-based CF - Pearson", "")
-CF_BASELINE_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNBaseline(sim_options={'name': 'pearson', 'user_based': False})), "KNNBaseline: Item-based CF - Pearson", "")
-CF_MEANS_USER_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True})), "KNNWithMeans: User-based CF - Pearson", "")
 CF_MEANS_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithMeans: Item-based CF - Pearson", "")
-CF_BASIC_USER_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': True})), "KNNBasic: User-based CF - Pearson", "")
 CF_BASIC_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF - Pearson", "")
-SVD = RecommenderAlgorithm(SVD(), "SVD", "")
 
 def addDatasetAccessorToSet(datasetAccessors, datasetType):
     datasetAccessor = DatasetAccessor()
@@ -161,11 +153,7 @@ class RecommenderService:
 
         createTrainAndTestSetsForTheSelectedDatasets(datasetAccessors, TESTSET_SIZE)
 
-        # algorithmsForJesterAndNetflix = [CF_BASIC_ITEM_PEARSON, CF_MEANS_ITEM_PEARSON, CF_BASELINE_ITEM_PEARSON, CF_ZSCORE_ITEM_PEARSON, SVD]
-        # self.testerAddDatasetAccessorAndAlgorithmToRecommender(datasetAccessors, algorithmsForJesterAndNetflix)
-
-        algorithms = [CF_BASIC_ITEM_PEARSON, CF_BASIC_USER_PEARSON, CF_MEANS_ITEM_PEARSON, CF_MEANS_USER_PEARSON, CF_BASELINE_ITEM_PEARSON, CF_BASELINE_USER_PEARSON, CF_ZSCORE_ITEM_PEARSON, CF_ZSCORE_USER_PEARSON]
-        self.testerAddDatasetAccessorAndAlgorithmToRecommender(datasetAccessors, algorithms)
+        self.testerAddDatasetAccessorAndAlgorithmToRecommender(datasetAccessors)
 
         self.printSelectedAlgorithmsWithDatasets()
 
@@ -175,7 +163,9 @@ class RecommenderService:
 
         print("Testing...DONE!")
 
-    def testerAddDatasetAccessorAndAlgorithmToRecommender(self, datasetAccessors, algorithms):
+    def testerAddDatasetAccessorAndAlgorithmToRecommender(self, datasetAccessors):
+        algorithms = [CF_BASIC_ITEM_PEARSON, CF_MEANS_ITEM_PEARSON]
+
         for datasetAccessor in datasetAccessors:
             datasetName = datasetAccessor.getDataset().getDatasetType().value
 

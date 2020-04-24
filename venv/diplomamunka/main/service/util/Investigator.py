@@ -39,22 +39,14 @@ def getRecommenderAlgorithm(datasetNumberOfRatings, datasetRatio, datasetAccesso
 
     # if most of the matrix is filled with data CF can be used
     elif datasetRatio >= RATIO_THRESHOLD:
-        recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'cosine', 'user_based': False})), "CF: Item-based KNNWithMeans", datasetName)
+        recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "CF: Item-based KNNWithMeans", datasetName)
 
     # if the matrix is sparse: content-based + KNN CF
     else:
         cb = ContentBased(datasetAccessor)
-        datasetType = datasetAccessor.getDataset().getDatasetType()
+        knnItemCosine = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'cosine', 'user_based': False}))
 
-        # memory issues
-        if datasetType == DatasetType.NETFLIX_PRIZE_DATASET:
-            knnItemCosine = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'cosine', 'user_based': False}))
-
-            recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnItemCosine], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: Item-based KNNWithMeans", datasetName)
-        else:
-            knnUserPearson = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': True}))
-
-            recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnUserPearson], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: User-based KNNWithMeans", datasetName)
+        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnItemCosine], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: Item-based KNNWithMeans", datasetName)
 
     return recommenderAlgorithm
 
@@ -70,10 +62,6 @@ def investigateChosenDataset(datasetAccessor):
         recommenderAlgorithm = getRecommenderAlgorithm(DatasetConstants.JESTER_NUMBER_OF_RATINGS, DatasetConstants.JESTER_RATIO, datasetAccessor)
     elif datasetType == DatasetType.NETFLIX_PRIZE_DATASET:
         recommenderAlgorithm = getRecommenderAlgorithm(DatasetConstants.NETFLIX_NUMBER_OF_RATINGS, DatasetConstants.NETFLIX_RATIO, datasetAccessor)
-    # worst case scenario: use KNNBasic
-    else:
-        print("The given dataset wasn't recognized! Returning with KNNBasic")
-        recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'cosine', 'user_based': False})), "CF: Item-based KNNBasic", datasetType.value)
 
     return recommenderAlgorithm
 
