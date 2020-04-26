@@ -11,8 +11,10 @@ from surprise import KNNBasic, KNNWithMeans
 
 TESTSET_SIZE = 0.25
 
-CF_MEANS_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "KNNWithMeans: Item-based CF - Pearson", "")
-CF_BASIC_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF - Pearson", "")
+SIM_OPTIONS = {'name': 'pearson', 'user_based': False}
+
+CF_MEANS_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options=SIM_OPTIONS)), "KNNWithMeans: Item-based CF - Pearson", "")
+CF_BASIC_ITEM_PEARSON = RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options=SIM_OPTIONS)), "KNNBasic: Item-based CF - Pearson", "")
 
 def addDatasetAccessorToSet(datasetAccessors, datasetType):
     datasetAccessor = DatasetAccessor()

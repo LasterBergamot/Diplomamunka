@@ -7,23 +7,27 @@ from diplomamunka.main.service.recommender.algorithm.RecommenderAlgorithm import
 from surprise import KNNBasic, KNNWithMeans
 from surprise.prediction_algorithms.matrix_factorization import SVD
 
+KNN_BASIC_ITEM_BASED_CF = "KNNBasic: Item-based CF"
+
+SIM_OPTIONS = {'name': 'pearson', 'user_based': False}
+
 RATINGS_THRESHOLD = 1500000
 RATIO_THRESHOLD = 0.5
 
 def getRecommenderAlgorithmForML100k(datasetAccessor):
     datasetName = datasetAccessor.getDataset().getDatasetType().value
 
-    return RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF", datasetName)
+    return RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options=SIM_OPTIONS)), KNN_BASIC_ITEM_BASED_CF, datasetName)
 
 def getRecommenderAlgorithmForML1m(datasetAccessor):
     datasetName = datasetAccessor.getDataset().getDatasetType().value
 
-    return RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF", datasetName)
+    return RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options=SIM_OPTIONS)), KNN_BASIC_ITEM_BASED_CF, datasetName)
 
 def getRecommenderAlgorithmForJester(datasetAccessor):
     datasetName = datasetAccessor.getDataset().getDatasetType().value
 
-    return RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options={'name': 'pearson', 'user_based': False})), "KNNBasic: Item-based CF", datasetName)
+    return RecommenderAlgorithm(CollaborativeFiltering(KNNBasic(sim_options=SIM_OPTIONS)), KNN_BASIC_ITEM_BASED_CF, datasetName)
 
 def getRecommenderAlgorithmForNetflix(datasetAccessor):
     datasetName = datasetAccessor.getDataset().getDatasetType().value
@@ -39,31 +43,37 @@ def getRecommenderAlgorithm(datasetNumberOfRatings, datasetRatio, datasetAccesso
 
     # if most of the matrix is filled with data CF can be used
     elif datasetRatio >= RATIO_THRESHOLD:
-        recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'pearson', 'user_based': False})), "CF: Item-based KNNWithMeans", datasetName)
+        recommenderAlgorithm = RecommenderAlgorithm(CollaborativeFiltering(KNNWithMeans(sim_options=SIM_OPTIONS)), "CF: Item-based KNNWithMeans", datasetName)
 
     # if the matrix is sparse: content-based + KNN CF
     else:
         cb = ContentBased(datasetAccessor)
-        knnItemCosine = CollaborativeFiltering(KNNWithMeans(sim_options={'name': 'cosine', 'user_based': False}))
+        knnItemPearson = CollaborativeFiltering(KNNWithMeans(sim_options=SIM_OPTIONS))
 
-        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnItemCosine], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: Item-based KNNWithMeans", datasetName)
+        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([cb, knnItemPearson], [0.5, 0.5]), "Hybrid: Content-Based KNN and CF: Item-based KNNWithMeans", datasetName)
 
     return recommenderAlgorithm
 
 # could return with several algorithm
 def investigateChosenDataset(datasetAccessor):
     datasetType = datasetAccessor.getDataset().getDatasetType()
+    numberOfRatings = 0
+    ratio = 0
 
     if datasetType == DatasetType.MOVIELENS_100K:
-        recommenderAlgorithm = getRecommenderAlgorithm(DatasetConstants.ML_100k_NUMBER_OF_RATINGS, DatasetConstants.ML_100k_RATIO, datasetAccessor)
+        numberOfRatings = DatasetConstants.ML_100k_NUMBER_OF_RATINGS
+        ratio = DatasetConstants.ML_100k_RATIO
     elif datasetType == DatasetType.MOVIELENS_1m:
-        recommenderAlgorithm = getRecommenderAlgorithm(DatasetConstants.ML_1M_NUMBER_OF_RATINGS, DatasetConstants.ML_1M_RATIO, datasetAccessor)
+        numberOfRatings = DatasetConstants.ML_1M_NUMBER_OF_RATINGS
+        ratio = DatasetConstants.ML_1M_RATIO
     elif datasetType == DatasetType.JESTER:
-        recommenderAlgorithm = getRecommenderAlgorithm(DatasetConstants.JESTER_NUMBER_OF_RATINGS, DatasetConstants.JESTER_RATIO, datasetAccessor)
+        numberOfRatings = DatasetConstants.JESTER_NUMBER_OF_RATINGS
+        ratio = DatasetConstants.JESTER_RATIO
     elif datasetType == DatasetType.NETFLIX_PRIZE_DATASET:
-        recommenderAlgorithm = getRecommenderAlgorithm(DatasetConstants.NETFLIX_NUMBER_OF_RATINGS, DatasetConstants.NETFLIX_RATIO, datasetAccessor)
+        numberOfRatings = DatasetConstants.NETFLIX_NUMBER_OF_RATINGS
+        ratio = DatasetConstants.NETFLIX_RATIO
 
-    return recommenderAlgorithm
+    return getRecommenderAlgorithm(numberOfRatings, ratio, datasetAccessor)
 
 class Investigator:
     pass
