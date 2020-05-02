@@ -5,6 +5,7 @@ import time
 import numpy as np
 import pandas as pd
 
+
 def reorderCsvColumns():
     csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
     reorderedCsvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/removedHeader_Netflix_dataframe_to_csv_export.csv"
@@ -37,8 +38,10 @@ def removeEmptyRowsFromCsvPd():
     df = pd.read_csv(csvPath)
     df.to_csv(noBlankRowsCsv, index=False)
 
+
 # source: https://gist.github.com/jrivero/1085501
-def split(filehandler, delimiter=',', row_limit=10000, output_name_template='output_%s.csv', output_path='.', keep_headers=True):
+def split(filehandler, delimiter=',', row_limit=10000, output_name_template='output_%s.csv', output_path='.',
+          keep_headers=True):
     """
     Splits a CSV file into multiple pieces.
 
@@ -79,6 +82,7 @@ def split(filehandler, delimiter=',', row_limit=10000, output_name_template='out
                 current_out_writer.writerow(headers)
         current_out_writer.writerow(row)
 
+
 def removeEmptyRows():
     csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
     noBlankRowsCsv = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/noBlankRows_Netflix_dataframe_to_csv_export.csv"
@@ -96,7 +100,7 @@ def removeEmptyRows():
 def readFromCsv(csvPath):
     return pd.read_csv(csvPath, header=None, names=['user', 'rating', 'timestamp'], usecols=[0, 1, 2])
 
-
+# Source: https://www.kaggle.com/laowingkin/netflix-movie-recommendation
 def makeNetflixDatasetUsable():
     start = time.time()
 
