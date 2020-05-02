@@ -48,8 +48,8 @@ class ContentBased(AlgoBase):
         AlgoBase.fit(self, trainset)
         genres = defaultdict(list)
         genreSimilarity = 1
-        datasetName = self.datasetAccessor.getDataset().getDatasetType().value
         datasetType = self.datasetAccessor.getDataset().getDatasetType()
+        datasetName = datasetType.value
         datasetTypeIsMovieLens = datasetType == DatasetType.MOVIELENS_100K or datasetType == DatasetType.MOVIELENS_1m
 
         # Compute item similarity matrix based on content attributes
