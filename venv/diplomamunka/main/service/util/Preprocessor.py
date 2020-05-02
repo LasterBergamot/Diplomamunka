@@ -5,6 +5,13 @@ import time
 import numpy as np
 import pandas as pd
 
+PATH_EXPORT_CSV = r'D:\Netflix_dataframe_to_csv_export.csv'
+
+PATH_COMBINED_DATA_4 = 'D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_4.txt'
+PATH_COMBINED_DATA_3 = 'D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_3.txt'
+PATH_COMBINED_DATA_2 = 'D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_2.txt'
+PATH_COMBINED_DATA_1 = 'D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_1.txt'
+
 
 def reorderCsvColumns():
     csvPath = "D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/Netflix_Prize_Dataset_ratings.csv"
@@ -105,19 +112,19 @@ def makeNetflixDatasetUsable():
     start = time.time()
 
     print("Reading combined_data_1")
-    df1 = readFromCsv('D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_1.txt')
+    df1 = readFromCsv(PATH_COMBINED_DATA_1)
     df1['rating'] = df1['rating'].astype(float)
 
     print("Reading combined_data_2")
-    df2 = readFromCsv('D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_2.txt')
+    df2 = readFromCsv(PATH_COMBINED_DATA_2)
     df2['rating'] = df2['rating'].astype(float)
 
     print("Reading combined_data_3")
-    df3 = readFromCsv('D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_3.txt')
+    df3 = readFromCsv(PATH_COMBINED_DATA_3)
     df3['rating'] = df3['rating'].astype(float)
 
     print("Reading combined_data_4")
-    df4 = readFromCsv('D:/Egyetem/Msc/Diplomamunka/Netflix_Prize_Dataset/combined_data_4.txt')
+    df4 = readFromCsv(PATH_COMBINED_DATA_4)
     df4['rating'] = df4['rating'].astype(float)
 
     print("Reading the data took: {}".format(time.time() - start))
@@ -133,15 +140,6 @@ def makeNetflixDatasetUsable():
     print('Full dataset shape: {}'.format(df.shape))
     print('-Dataset examples-')
     print(df.iloc[::5000000, :])
-
-    # get movie count
-    movie_count = df.isnull().sum()[1]
-
-    # get customer count
-    cust_count = df['user'].nunique() - movie_count
-
-    # get rating count
-    rating_count = df['user'].count() - movie_count
 
     print("Combining the data took: {}".format(time.time() - start))
 
@@ -180,7 +178,7 @@ def makeNetflixDatasetUsable():
     timeToFormatTheData = time.time()
     print("Time to format the data: " + str(timeToFormatTheData - start) + " seconds")
 
-    export_csv = df.to_csv(r'D:\Netflix_dataframe_to_csv_export.csv', index=None, header=True)
+    df.to_csv(PATH_EXPORT_CSV, index=None, header=True)
 
     end = time.time()
     print("Whole process: " + str(end - start) + " seconds")

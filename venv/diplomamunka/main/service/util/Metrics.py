@@ -4,7 +4,7 @@ from collections import defaultdict
 
 from surprise import accuracy
 
-def calculateTopN(predictions, n=10, minimumRating=4.0):
+def CalculateTopN(predictions, n=10, minimumRating=4.0):
     topN = defaultdict(list)
 
     for userID, itemID, actualRating, estimatedRating, _ in predictions:

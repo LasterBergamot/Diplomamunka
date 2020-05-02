@@ -1,7 +1,7 @@
 import time
 
 from diplomamunka.main.dao.DatasetType import DatasetType
-from diplomamunka.main.service.util.Metrics import Metrics, calculateTopN
+from diplomamunka.main.service.util.Metrics import Metrics, CalculateTopN
 from surprise import KNNBaseline
 
 class RecommenderAlgorithm:
@@ -34,7 +34,7 @@ class RecommenderAlgorithm:
 
         # Required for Coverage, Diversity and Novelty
         print("Calculating top-N predictions...START!")
-        topNPredicted = calculateTopN(predictions, minimumRating=ratingThreshold)
+        topNPredicted = CalculateTopN(predictions, minimumRating=ratingThreshold)
         print("Calculating top-N predictions...END!")
 
         # Required for Diversity
