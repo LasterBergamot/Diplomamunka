@@ -74,6 +74,8 @@ class ContentBased(AlgoBase):
                     genreSimilarity = computeGenreSimilarity(thisMovieID, otherMovieID, genres)
 
                 yearSimilarity = computeYearSimilarity(thisMovieID, otherMovieID, years)
+
+                # Symmetrical matrix makes sure, that it doesn't matter from which point of view we'll make the comparison
                 self.similarities[thisRating, otherRating] = genreSimilarity * yearSimilarity if datasetTypeIsMovieLens else yearSimilarity
                 self.similarities[otherRating, thisRating] = self.similarities[thisRating, otherRating]
 

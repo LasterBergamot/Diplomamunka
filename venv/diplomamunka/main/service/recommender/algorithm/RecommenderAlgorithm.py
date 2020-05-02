@@ -39,7 +39,7 @@ class RecommenderAlgorithm:
 
         # Required for Diversity
         print("Calculating similarity matrix...START!")
-        similarityMatrix = KNNBaseline(sim_options={'name': 'cosine', 'user_based': False})
+        similarityMatrix = KNNBaseline(sim_options={'name': 'pearson', 'user_based': False})
         similarityMatrix.fit(trainSet)
         print("Calculating similarity matrix...END!")
 

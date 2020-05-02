@@ -29,13 +29,14 @@ class Hybrid(AlgoBase):
         sumWeights = 0
 
         for idx in range(len(self.algorithms)):
-            if isinstance(self.algorithms[idx], CollaborativeFiltering):
-                est = self.algorithms[idx].estimate(u, i) if isinstance(self.algorithms[idx].estimate(u, i), float) else self.algorithms[idx].estimate(u, i)[0]
+            currentAlgorithm = self.algorithms[idx]
+            estimate = currentAlgorithm.estimate(u, i)
+            currentWeight = self.weights[idx]
 
-                sumScores += est * self.weights[idx]
-                sumWeights += self.weights[idx]
-            elif isinstance(self.algorithms[idx], ContentBased):
-                sumScores += self.algorithms[idx].estimate(u, i) * self.weights[idx]
-                sumWeights += self.weights[idx]
+            if isinstance(currentAlgorithm, CollaborativeFiltering) and not isinstance(estimate, float):
+                estimate = estimate[0]
+
+            sumScores += estimate * currentWeight
+            sumWeights += currentWeight
 
         return sumScores / sumWeights

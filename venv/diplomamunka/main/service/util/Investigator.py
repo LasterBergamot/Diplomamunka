@@ -39,7 +39,10 @@ def getRecommenderAlgorithm(datasetNumberOfRatings, datasetRatio, datasetAccesso
 
     # if there are too many ratings/data matrix factorization can be used
     if datasetNumberOfRatings >= RATINGS_THRESHOLD and datasetRatio >= RATIO_THRESHOLD:
-        recommenderAlgorithm = RecommenderAlgorithm(SVD(), "SVD", datasetName)
+        svd = SVD()
+        knnItemPearson = CollaborativeFiltering(KNNWithMeans(sim_options=SIM_OPTIONS))
+
+        recommenderAlgorithm = RecommenderAlgorithm(Hybrid([svd, knnItemPearson], [0.5, 0.5]), "Hybrid: SVD and CF: Item-based KNNWithMeans", datasetName)
 
     # if most of the matrix is filled with data CF can be used
     elif datasetRatio >= RATIO_THRESHOLD:
